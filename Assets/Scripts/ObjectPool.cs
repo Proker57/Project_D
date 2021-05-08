@@ -17,7 +17,7 @@ namespace BOYAREngine.Utils
             for (var i = 0; i < Amount; i++)
             {
                 var temp = Instantiate(_objectToPool);
-                temp.GetComponent<Bullet>().Ship = GetComponent<UnitBase>();
+                temp.GetComponent<BulletBase>().Ship = GetComponent<UnitBase>();
                 temp.transform.parent = _parent.transform;
                 temp.SetActive(false);
                 _pooledObjects.Add(temp);

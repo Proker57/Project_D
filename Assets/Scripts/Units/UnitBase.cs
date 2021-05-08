@@ -41,9 +41,9 @@ namespace BOYAREngine.Units
 
         private void OnTriggerEnter2D(Collider2D other)
         {
-            if (other.gameObject.GetComponent<Bullet>() != null)
+            if (other.gameObject.GetComponent<BulletBase>() != null)
             {
-                var bullet = other.gameObject.GetComponent<Bullet>();
+                var bullet = other.gameObject.GetComponent<BulletBase>();
 
                 if (bullet.IsAlly != IsAlly)
                 {
@@ -71,6 +71,7 @@ namespace BOYAREngine.Units
 
         protected virtual void Death()
         {
+            GameController.Instance.RemoveShip?.Invoke(this);
             gameObject.SetActive(false);
         }
 
@@ -135,7 +136,7 @@ namespace BOYAREngine.Units
 
         public Vector2 SearchForRandomDestination()
         {
-            return new Vector2(Random.Range(-8.8f, 8.6f), Random.Range(-4.3f, 5.37f));
+            return new Vector2(Random.Range(-20f, 20f), Random.Range(-10, 10f));
         }
 
         public void SearchForTarget()

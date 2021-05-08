@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace BOYAREngine.Units
 {
-    public class Bullet : MonoBehaviour
+    public class BulletBase : MonoBehaviour
     {
         public UnitBase Ship;
         public bool IsAlly;
@@ -32,7 +32,7 @@ namespace BOYAREngine.Units
             _rigidbody2D.velocity = _direction * _speed;
         }
 
-        private void BackToPool()
+        protected virtual void BackToPool()
         {
             gameObject.SetActive(false);
         }

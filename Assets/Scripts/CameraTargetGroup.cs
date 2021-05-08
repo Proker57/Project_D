@@ -6,22 +6,72 @@ using UnityEngine;
 
 namespace BOYAREngine.Utils
 {
+    [RequireComponent(typeof(Camera))]
     public class CameraTargetGroup : MonoBehaviour
     {
-        [SerializeField] private CinemachineTargetGroup _targetGroup;
-        private List<GameObject> _targets;
+        public List<GameObject> Targets;
 
-        public void FindAllTargets()
+        [Header("Camera ZoomIn/Out settings")]
+        [SerializeField] private Vector3 _offset;
+        [SerializeField] private Vector3 _velocity;
+        [SerializeField] private float _smoothTime;
+        [SerializeField] private float _minZoom;
+        [SerializeField] private float _maxZoom;
+        [SerializeField] private float _zoomLimiter;
+
+        private Camera _camera;
+
+        private void Awake()
         {
-            foreach (var ally in GameController.Instance.AllyShips)
+            _camera = GetComponent<Camera>();
+        }
+
+        private void LateUpdate()
+        {
+            if (Targets.Count == 0) return;
+
+            Move();
+            Zoom();
+        }
+
+        private void Move()
+        {
+            var centerPoint = GetCenterPoint();
+            var newPosition = centerPoint + _offset;
+            transform.position = Vector3.SmoothDamp(transform.position, newPosition, ref _velocity, _smoothTime);
+        }
+
+        private void Zoom()
+        {
+            var newZoom = Mathf.Lerp(_maxZoom, _minZoom, GetGreatestDistance() / _zoomLimiter);
+            _camera.orthographicSize = Mathf.Lerp(_camera.orthographicSize, newZoom, Time.deltaTime);
+        }
+
+        private Vector3 GetCenterPoint()
+        {
+            if (Targets.Count == 1)
             {
-                _targetGroup.AddMember(ally.transform, 2f, 2f);
+                return Targets[0].transform.position;
             }
 
-            foreach (var enemy in GameController.Instance.EnemyShips)
+            var bounds = new Bounds(Targets[0].transform.position, Vector3.zero);
+            foreach (var t in Targets)
             {
-                _targetGroup.AddMember(enemy.transform, 1f, 2f);
+                bounds.Encapsulate(t.transform.position);
             }
+
+            return bounds.center;
+        }
+
+        private float GetGreatestDistance()
+        {
+            var bounds = new Bounds(Targets[0].transform.position, Vector3.zero);
+            foreach (var t in Targets)
+            {
+                bounds.Encapsulate(t.transform.position);
+            }
+
+            return bounds.size.x;
         }
     }
 }
