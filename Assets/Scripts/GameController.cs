@@ -12,8 +12,8 @@ namespace BOYAREngine.Controller
         public static GameController Instance;
 
         [Header("Managing visibility of objects between states")]
-        public GameObject MainMenuObject;
-        public GameObject GameObject;
+        public GameObject MainMenu;
+        public GameObject Game;
         [Header("InGame UI")]
         public Text AlliesCountText;
         public Text EnemiesCountText;
@@ -23,9 +23,18 @@ namespace BOYAREngine.Controller
         public List<GameObject> AllyShips;
         public List<GameObject> EnemyShips;
 
+        [Header("Points")]
+        public int Points;
+
         private void Awake()
         {
             Instance = this;
+        }
+
+        public void EndBattle()
+        {
+            MainMenu.SetActive(true);
+            Game.SetActive(false);
         }
     }
 }

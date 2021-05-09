@@ -24,6 +24,11 @@ namespace BOYAREngine.Units
             _gc.AllyShips.Remove(gameObject);
             _gc.AlliesCountText.text = "Allies: " + _gc.AllyShips.Count;
             _gc.CameraTargetGroup.Targets.Remove(gameObject);
+
+            if (_gc.AllyShips.Count == 0)
+            {
+                _gc.EndBattle();
+            }
         }
 
         private void OnEnable()

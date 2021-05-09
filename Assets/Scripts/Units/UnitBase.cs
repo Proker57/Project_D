@@ -8,7 +8,7 @@ namespace BOYAREngine.Units
     public class UnitBase : MonoBehaviour
     {
         [Header("Health")]
-        [SerializeField] protected int HealthMax;
+        public int HealthMax;
         protected int HealthCurrent;
 
         [Header("Movement")]
@@ -57,9 +57,12 @@ namespace BOYAREngine.Units
 
         protected virtual void Update()
         {
-            Movement();
-            Shoot();
-            SpecialAbility();
+            if (gameObject.activeSelf)
+            {
+                Movement();
+                Shoot();
+                SpecialAbility();
+            }
         }
 
         private void OnTriggerEnter2D(Collider2D other)

@@ -6,10 +6,12 @@ namespace BOYAREngine.Units
     public class Enemy : MonoBehaviour
     {
         private GameController _gc;
+        private UnitBase _unitBase;
 
         private void Awake()
         {
             _gc = GameController.Instance;
+            _unitBase = GetComponent<UnitBase>();
         }
 
         private void AddShip()
@@ -23,7 +25,13 @@ namespace BOYAREngine.Units
         {
             _gc.EnemyShips.Remove(gameObject);
             _gc.EnemiesCountText.text = "Enemies: " + _gc.EnemyShips.Count;
+            _gc.Points += _unitBase.HealthMax;
             _gc.CameraTargetGroup.Targets.Remove(gameObject);
+
+            if (_gc.EnemyShips.Count == 0)
+            {
+                _gc.EndBattle();
+            }
         }
 
         private void OnEnable()

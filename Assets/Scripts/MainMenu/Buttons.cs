@@ -7,8 +7,8 @@ namespace BOYAREngine.MainMenu
     {
         public void StartGame()
         {
-            GameController.Instance.MainMenuObject.SetActive(false);
-            GameController.Instance.GameObject.SetActive(true);
+            GameController.Instance.MainMenu.SetActive(false);
+            GameController.Instance.Game.SetActive(true);
         }
     }
 }
