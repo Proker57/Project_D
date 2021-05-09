@@ -4,16 +4,19 @@ namespace BOYAREngine.Units
 {
     public class Attacker : UnitBase
     {
-        private void Awake()
+        protected override void Update()
         {
+            base.Update();
 
         }
 
         protected override void UseSpecialAbility()
         {
+            base.UseSpecialAbility();
+
             BulletSpeed *= 3;
 
-            Invoke(nameof(RestoreBulletSpeed), 6f);
+            Invoke(nameof(RestoreBulletSpeed), SpecialDuration);
         }
 
         private void RestoreBulletSpeed()

@@ -1,5 +1,4 @@
 using System.Collections;
-using BOYAREngine.Controller;
 using BOYAREngine.Utils;
 using UnityEngine;
 using UnityEngine.UI;
@@ -9,14 +8,14 @@ namespace BOYAREngine.Units
     public class UnitBase : MonoBehaviour
     {
         [Header("Health")]
-        [SerializeField] protected int MaxHealth;
-        protected int CurrentHealth;
+        [SerializeField] protected int HealthMax;
+        protected int HealthCurrent;
 
         [Header("Movement")]
-        [SerializeField] protected float Speed;
+        [SerializeField] protected float MoveSpeed;
         protected bool CanMove = true;
-        protected bool IsMovingToDestination;
-        protected Vector2 CurrentDestination;
+        private bool _isMovingToDestination;
+        private Vector2 _currentDestination;
 
         [Header("Weapon Settings")]
         [SerializeField] internal int Damage;
@@ -35,22 +34,25 @@ namespace BOYAREngine.Units
         [Header("Special")]
         [HideInInspector] public float SpecialCurrent;
         [SerializeField] private float _specialMax;
+        [SerializeField] protected float SpecialDuration;
+        private float _specialDurationCurrent;
         [SerializeField] private float _specialPassiveIncome;
         private float _specialPassiveIncomeCurrent;
+        private bool _isSpecialActive;
 
         [Header("UI")]
         [SerializeField] private Image _hpBar;
         [SerializeField] private Image _specialBar;
+        [SerializeField] private GameObject _specialCountdown;
+        [SerializeField] private Image _specialCountdownBar;
 
         [Space]
         [SerializeField] internal bool IsAlly;
 
         private void Start()
         {
-            CurrentHealth = MaxHealth;
+            HealthCurrent = HealthMax;
             _specialPassiveIncomeCurrent = _specialPassiveIncome;
-
-            GameController.Instance.AddShip?.Invoke(this);
         }
 
         protected virtual void Update()
@@ -68,11 +70,11 @@ namespace BOYAREngine.Units
 
                 if (bullet.IsAlly != IsAlly)
                 {
-                    CurrentHealth -= bullet.ReceiveDamage();
+                    HealthCurrent -= bullet.ReceiveDamage();
                     UpdateHpUi();
                     bullet.gameObject.SetActive(false);
 
-                    if (CurrentHealth <= 0)
+                    if (HealthCurrent <= 0)
                     {
                         Death();
                     }
@@ -93,25 +95,24 @@ namespace BOYAREngine.Units
 
         protected virtual void Death()
         {
-            GameController.Instance.RemoveShip?.Invoke(this);
             gameObject.SetActive(false);
         }
 
         protected virtual void Movement()
         {
             if (!CanMove) return;
-            if (!IsMovingToDestination)
+            if (!_isMovingToDestination)
             {
-                CurrentDestination = SearchForRandomDestination();
-                IsMovingToDestination = true;
+                _currentDestination = SearchForRandomDestination();
+                _isMovingToDestination = true;
             }
 
-            if (Vector2.Distance(transform.position, CurrentDestination) <= 0.001f)
+            if (Vector2.Distance(transform.position, _currentDestination) <= 0.001f)
             {
-                IsMovingToDestination = false;
+                _isMovingToDestination = false;
             }
 
-            transform.position = Vector2.MoveTowards(transform.position, CurrentDestination, Speed * Time.deltaTime);
+            transform.position = Vector2.MoveTowards(transform.position, _currentDestination, MoveSpeed * Time.deltaTime);
         }
 
         protected void Shoot()
@@ -137,14 +138,28 @@ namespace BOYAREngine.Units
             if (SpecialCurrent >= _specialMax)
             {
                 UseSpecialAbility();
-
-                SpecialCurrent = 0f;
             }
         }
 
         protected virtual void UseSpecialAbility()
         {
+            
+            _specialDurationCurrent = SpecialDuration;
+            _specialCountdown.SetActive(true);
 
+            StartCoroutine(SpecialCountdown());
+            SpecialCurrent = 0f;
+        }
+
+        private IEnumerator SpecialCountdown()
+        {
+            while (_specialDurationCurrent >= 0.001f)
+            {
+                _specialDurationCurrent -= Time.deltaTime;
+                _specialCountdownBar.fillAmount = Mathf.InverseLerp(0f, SpecialDuration, _specialDurationCurrent);
+                yield return null;
+            }
+            _specialCountdown.SetActive(false);
         }
 
         private IEnumerator RapidFire()
@@ -181,7 +196,7 @@ namespace BOYAREngine.Units
 
         private void UpdateHpUi()
         {
-            _hpBar.fillAmount = Mathf.InverseLerp(0, MaxHealth, CurrentHealth);
+            _hpBar.fillAmount = Mathf.InverseLerp(0, HealthMax, HealthCurrent);
         }
 
         public void UpdateSpecialUi()

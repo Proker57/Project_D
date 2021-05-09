@@ -71,7 +71,7 @@ namespace BOYAREngine.Utils
                 bounds.Encapsulate(t.transform.position);
             }
 
-            return bounds.size.x;
+            return bounds.size.x + bounds.size.y;
         }
     }
 }

@@ -1,18 +1,40 @@
-using System.Collections;
-using System.Collections.Generic;
+using BOYAREngine.Controller;
 using UnityEngine;
 
-public class Enemy : MonoBehaviour
+namespace BOYAREngine.Units
 {
-    // Start is called before the first frame update
-    void Start()
+    public class Enemy : MonoBehaviour
     {
-        
-    }
+        private GameController _gc;
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+        private void Awake()
+        {
+            _gc = GameController.Instance;
+        }
+
+        private void AddShip()
+        {
+            _gc.EnemyShips.Add(gameObject);
+            _gc.EnemiesCountText.text = "Enemies: " + _gc.EnemyShips.Count;
+            _gc.CameraTargetGroup.Targets.Add(gameObject);
+        }
+
+        private void RemoveShip()
+        {
+            _gc.EnemyShips.Remove(gameObject);
+            _gc.EnemiesCountText.text = "Enemies: " + _gc.EnemyShips.Count;
+            _gc.CameraTargetGroup.Targets.Remove(gameObject);
+        }
+
+        private void OnEnable()
+        {
+            AddShip();
+        }
+
+        private void OnDisable()
+        {
+            RemoveShip();
+        }
     }
 }
+
