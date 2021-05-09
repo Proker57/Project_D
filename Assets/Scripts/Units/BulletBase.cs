@@ -39,11 +39,15 @@ namespace BOYAREngine.Units
 
         public int ReceiveDamage()
         {
+            Ship.SpecialCurrent++;
+            Ship.UpdateSpecialUi();
+
             return Ship.Damage;
         }
 
         private void OnEnable()
         {
+            if (Ship != null) _speed = Ship.BulletSpeed;
             _isAlive = true;
         }
 

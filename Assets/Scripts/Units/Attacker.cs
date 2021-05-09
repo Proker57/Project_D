@@ -8,6 +8,18 @@ namespace BOYAREngine.Units
         {
 
         }
+
+        protected override void UseSpecialAbility()
+        {
+            BulletSpeed *= 3;
+
+            Invoke(nameof(RestoreBulletSpeed), 6f);
+        }
+
+        private void RestoreBulletSpeed()
+        {
+            BulletSpeed /= 3;
+        }
     }
 }
 

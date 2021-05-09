@@ -2,34 +2,54 @@ using System.Collections;
 using BOYAREngine.Controller;
 using BOYAREngine.Utils;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace BOYAREngine.Units
 {
     public class UnitBase : MonoBehaviour
     {
-        [SerializeField] protected int Health;
+        [Header("Health")]
+        [SerializeField] protected int MaxHealth;
+        protected int CurrentHealth;
+
+        [Header("Movement")]
+        [SerializeField] protected float Speed;
+        protected bool CanMove = true;
+        protected bool IsMovingToDestination;
+        protected Vector2 CurrentDestination;
+
+        [Header("Weapon Settings")]
         [SerializeField] internal int Damage;
         [SerializeField] internal int BulletLifeTime;
         [SerializeField] internal float BulletSpeed;
-        [SerializeField] protected float Speed;
-        [SerializeField] protected float SearchTargetRadius;
-        [SerializeField] protected float ShootSpitfireCooldown;
+        [SerializeField] protected float ShootInterval;
+        [SerializeField] protected float ReloadTime;
         [SerializeField] protected float ShootBufferDistance;
-        [SerializeField] protected float ReloadCooldown;
-        [SerializeField] internal bool IsAlly;
-        private float _shootCooldownCurrent;
-        protected bool CanMove = true;
+        [SerializeField] protected float SearchTargetRadius;
         protected bool CanShoot = true;
         protected bool IsShooting = true;
-        protected bool IsMovingToDestination;
-
-        internal Transform ShootTargetTransform;
-        [SerializeField] protected ObjectPool BulletsPool;
         [SerializeField] protected LayerMask TargetMask;
-        protected Vector2 CurrentDestination;
+        [SerializeField] protected ObjectPool BulletsPool;
+        internal Transform ShootTargetTransform;
+
+        [Header("Special")]
+        [HideInInspector] public float SpecialCurrent;
+        [SerializeField] private float _specialMax;
+        [SerializeField] private float _specialPassiveIncome;
+        private float _specialPassiveIncomeCurrent;
+
+        [Header("UI")]
+        [SerializeField] private Image _hpBar;
+        [SerializeField] private Image _specialBar;
+
+        [Space]
+        [SerializeField] internal bool IsAlly;
 
         private void Start()
         {
+            CurrentHealth = MaxHealth;
+            _specialPassiveIncomeCurrent = _specialPassiveIncome;
+
             GameController.Instance.AddShip?.Invoke(this);
         }
 
@@ -37,6 +57,7 @@ namespace BOYAREngine.Units
         {
             Movement();
             Shoot();
+            SpecialAbility();
         }
 
         private void OnTriggerEnter2D(Collider2D other)
@@ -47,10 +68,11 @@ namespace BOYAREngine.Units
 
                 if (bullet.IsAlly != IsAlly)
                 {
-                    Health -= bullet.ReceiveDamage();
+                    CurrentHealth -= bullet.ReceiveDamage();
+                    UpdateHpUi();
                     bullet.gameObject.SetActive(false);
 
-                    if (Health <= 0)
+                    if (CurrentHealth <= 0)
                     {
                         Death();
                     }
@@ -97,22 +119,45 @@ namespace BOYAREngine.Units
             if (!CanShoot) return;
             if (IsShooting)
             {
-                StartCoroutine(Spitfire());
+                StartCoroutine(RapidFire());
                 IsShooting = false;
             }
         }
 
-        private IEnumerator Spitfire()
+        private void SpecialAbility()
+        {
+            _specialPassiveIncomeCurrent -= Time.deltaTime;
+            if (_specialPassiveIncomeCurrent <= 0f)
+            {
+                SpecialCurrent++;
+                _specialPassiveIncomeCurrent = _specialPassiveIncome;
+                UpdateSpecialUi();
+            }
+
+            if (SpecialCurrent >= _specialMax)
+            {
+                UseSpecialAbility();
+
+                SpecialCurrent = 0f;
+            }
+        }
+
+        protected virtual void UseSpecialAbility()
+        {
+
+        }
+
+        private IEnumerator RapidFire()
         {
             
             for (var i = 0; i < BulletsPool.Amount; i++)
             {
-                yield return new WaitForSeconds(ShootSpitfireCooldown);
+                yield return new WaitForSeconds(ShootInterval);
                 SearchForTarget();
                 ShootBullet();
             }
 
-            Invoke(nameof(ReloadWeapons), ReloadCooldown);
+            Invoke(nameof(ReloadWeapons), ReloadTime);
         }
 
         private void ReloadWeapons()
@@ -132,6 +177,16 @@ namespace BOYAREngine.Units
                 bullet.transform.rotation = transform.rotation;
                 bullet.SetActive(true);
             }
+        }
+
+        private void UpdateHpUi()
+        {
+            _hpBar.fillAmount = Mathf.InverseLerp(0, MaxHealth, CurrentHealth);
+        }
+
+        public void UpdateSpecialUi()
+        {
+            _specialBar.fillAmount = Mathf.InverseLerp(0, _specialMax, SpecialCurrent);
         }
 
         public Vector2 SearchForRandomDestination()
