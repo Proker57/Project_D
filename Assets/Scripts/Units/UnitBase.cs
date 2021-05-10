@@ -57,12 +57,9 @@ namespace BOYAREngine.Units
 
         protected virtual void Update()
         {
-            if (gameObject.activeSelf)
-            {
-                Movement();
-                Shoot();
-                SpecialAbility();
-            }
+            Movement();
+            Shoot();
+            SpecialAbility();
         }
 
         private void OnTriggerEnter2D(Collider2D other)
@@ -98,7 +95,7 @@ namespace BOYAREngine.Units
 
         protected virtual void Death()
         {
-            gameObject.SetActive(false);
+            gameObject.transform.parent.gameObject.SetActive(false);
         }
 
         protected virtual void Movement()
