@@ -2,6 +2,7 @@ using System.Collections;
 using BOYAREngine.Utils;
 using UnityEngine;
 using UnityEngine.UI;
+using Random = UnityEngine.Random;
 
 namespace BOYAREngine.Units
 {
@@ -41,10 +42,16 @@ namespace BOYAREngine.Units
         private bool _isSpecialActive;
 
         [Header("UI")]
+        [SerializeField] private GameObject _hpGo;
         [SerializeField] private Image _hpBar;
+        [SerializeField] private GameObject _specialGo;
         [SerializeField] private Image _specialBar;
-        [SerializeField] private GameObject _specialCountdown;
+        [SerializeField] private GameObject _specialCountdownGo;
         [SerializeField] private Image _specialCountdownBar;
+
+        [Header("FX")]
+        [SerializeField] private SpriteRenderer _spriteRenderer;
+        [SerializeField] private ParticleSystem _deathFx;
 
         [Space]
         [SerializeField] internal bool IsAlly;
@@ -53,6 +60,13 @@ namespace BOYAREngine.Units
         {
             HealthCurrent = HealthMax;
             _specialPassiveIncomeCurrent = _specialPassiveIncome;
+
+            CanMove = true;
+            CanShoot = true;
+            _spriteRenderer.enabled = true;
+            _hpGo.SetActive(true);
+            _specialGo.SetActive(true);
+            _specialCountdownGo.SetActive(false);
         }
 
         protected virtual void Update()
@@ -70,27 +84,55 @@ namespace BOYAREngine.Units
 
                 if (bullet.IsAlly != IsAlly)
                 {
-                    HealthCurrent -= bullet.ReceiveDamage();
-                    UpdateHpUi();
+                    ReceiveDamage(bullet.ReceiveDamage());
                     bullet.gameObject.SetActive(false);
-
-                    if (HealthCurrent <= 0)
-                    {
-                        Death();
-                    }
                 }
             }
 
             if (IsAlly)
             {
                 if (other.gameObject.GetComponent<Enemy>() == null) return;
-                Death();
+                ShipCollided(other);
             }
             else
             {
                 if (other.gameObject.GetComponent<Ally>() == null) return;
-                Death();
+                ShipCollided(other);
             }
+        }
+
+        public void ReceiveDamage(int damage)
+        {
+            HealthCurrent -= damage;
+
+            if (HealthCurrent <= 0)
+            {
+                HealthCurrent = 0;
+
+                var fxMain = _deathFx.main;
+                fxMain.startColor = _spriteRenderer.color;
+                _deathFx.Play();
+
+                _spriteRenderer.enabled = false;
+                CanMove = false;
+                CanShoot = false;
+
+                _hpGo.SetActive(false);
+                _specialGo.SetActive(false);
+                _specialCountdownGo.SetActive(false);
+
+                Invoke(nameof(Death), 1f);
+            }
+
+            UpdateHpUi();
+        }
+
+        private void ShipCollided(Collider2D other)
+        {
+            var unitBase = other.GetComponent<UnitBase>();
+            ReceiveDamage(unitBase.HealthCurrent);
+            unitBase.ReceiveDamage(HealthCurrent);
+            
         }
 
         protected virtual void Death()
@@ -103,7 +145,8 @@ namespace BOYAREngine.Units
             if (!CanMove) return;
             if (!_isMovingToDestination)
             {
-                _currentDestination = SearchForRandomDestination();
+                MiniTask.Run(0f, () => { _currentDestination = SearchForRandomDestination(); });
+                //_currentDestination = SearchForRandomDestination();
                 _isMovingToDestination = true;
             }
 
@@ -143,9 +186,8 @@ namespace BOYAREngine.Units
 
         protected virtual void UseSpecialAbility()
         {
-            
             _specialDurationCurrent = SpecialDuration;
-            _specialCountdown.SetActive(true);
+            _specialCountdownGo.SetActive(true);
 
             StartCoroutine(SpecialCountdown());
             SpecialCurrent = 0f;
@@ -159,12 +201,11 @@ namespace BOYAREngine.Units
                 _specialCountdownBar.fillAmount = Mathf.InverseLerp(0f, SpecialDuration, _specialDurationCurrent);
                 yield return null;
             }
-            _specialCountdown.SetActive(false);
+            _specialCountdownGo.SetActive(false);
         }
 
         private IEnumerator RapidFire()
         {
-            
             for (var i = 0; i < BulletsPool.Amount; i++)
             {
                 yield return new WaitForSeconds(ShootInterval);

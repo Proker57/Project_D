@@ -951,6 +951,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ac0b09e7857660247b1477e93731de29, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!212 &994775412 stripped
+SpriteRenderer:
+  m_CorrespondingSourceObject: {fileID: 5097957840818286448, guid: def772e9ebb9eea4196938ab8dd87bac, type: 3}
+  m_PrefabInstance: {fileID: 5097957839144161332}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1227556955
 GameObject:
   m_ObjectHideFlags: 0
@@ -1116,6 +1121,7 @@ MonoBehaviour:
   Setup:
     MainMenuStateParent: {fileID: 865257179}
     GameStateParent: {fileID: 1315375545}
+    PointsText: {fileID: 544205646}
     AlliesCountText: {fileID: 631437614}
     EnemiesCountText: {fileID: 619883388}
     TimeText: {fileID: 1600457001}
@@ -1693,10 +1699,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Attacker Enemy
       objectReference: {fileID: 0}
-    - target: {fileID: 4032723979195984999, guid: a479f24de88bf374d8cefc632152606c, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a479f24de88bf374d8cefc632152606c, type: 3}
 --- !u!1001 &5097957839144161332
@@ -1758,5 +1760,18 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5097957840818286451, guid: def772e9ebb9eea4196938ab8dd87bac, type: 3}
+      propertyPath: _deathFx
+      value: 
+      objectReference: {fileID: 5097957839144161333}
+    - target: {fileID: 5097957840818286451, guid: def772e9ebb9eea4196938ab8dd87bac, type: 3}
+      propertyPath: _spriteRenderer
+      value: 
+      objectReference: {fileID: 994775412}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: def772e9ebb9eea4196938ab8dd87bac, type: 3}
+--- !u!198 &5097957839144161333 stripped
+ParticleSystem:
+  m_CorrespondingSourceObject: {fileID: 6476985436795838999, guid: def772e9ebb9eea4196938ab8dd87bac, type: 3}
+  m_PrefabInstance: {fileID: 5097957839144161332}
+  m_PrefabAsset: {fileID: 0}
