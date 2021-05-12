@@ -32,7 +32,7 @@ namespace BOYAREngine.Units
             _rigidbody2D.velocity = _direction * _speed;
         }
 
-        protected virtual void BackToPool()
+        internal virtual void BackToPool()
         {
             gameObject.SetActive(false);
         }

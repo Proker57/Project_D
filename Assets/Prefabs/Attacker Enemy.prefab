@@ -408,6 +408,7 @@ MonoBehaviour:
   HealthMax: 5
   MoveSpeed: 3
   Damage: 1
+  SearchRadius: 10
   BulletLifeTime: 4
   BulletSpeed: 5
   ShootInterval: 0.7

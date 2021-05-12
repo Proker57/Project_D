@@ -39,7 +39,7 @@ namespace BOYAREngine.Units
         private float _specialDurationCurrent;
         [SerializeField] private float _specialPassiveIncome;
         private float _specialPassiveIncomeCurrent;
-        private bool _isSpecialActive;
+        protected bool IsSpecialActive;
 
         [Header("UI")]
         [SerializeField] private GameObject _hpGo;
@@ -76,7 +76,7 @@ namespace BOYAREngine.Units
             SpecialAbility();
         }
 
-        private void OnTriggerEnter2D(Collider2D other)
+        public virtual void OnTriggerEnter2D(Collider2D other)
         {
             if (other.gameObject.GetComponent<BulletBase>() != null)
             {
@@ -186,6 +186,7 @@ namespace BOYAREngine.Units
 
         protected virtual void UseSpecialAbility()
         {
+            IsSpecialActive = true;
             _specialDurationCurrent = SpecialDuration;
             _specialCountdownGo.SetActive(true);
 
@@ -201,6 +202,8 @@ namespace BOYAREngine.Units
                 _specialCountdownBar.fillAmount = Mathf.InverseLerp(0f, SpecialDuration, _specialDurationCurrent);
                 yield return null;
             }
+
+            IsSpecialActive = false;
             _specialCountdownGo.SetActive(false);
         }
 

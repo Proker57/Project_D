@@ -4,12 +4,6 @@ namespace BOYAREngine.Units
 {
     public class Attacker : UnitBase
     {
-        protected override void Update()
-        {
-            base.Update();
-
-        }
-
         protected override void UseSpecialAbility()
         {
             base.UseSpecialAbility();

@@ -18,6 +18,7 @@ namespace BOYAREngine.Utils
             {
                 var temp = Instantiate(_objectToPool);
                 temp.GetComponent<BulletBase>().Ship = GetComponent<UnitBase>();
+                temp.GetComponent<BulletBase>().IsAlly = GetComponent<UnitBase>().IsAlly;
                 temp.transform.parent = _parent.transform;
                 temp.SetActive(false);
                 _pooledObjects.Add(temp);

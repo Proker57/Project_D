@@ -42,9 +42,11 @@ namespace BOYAREngine.Controller
 
             [Header("Ally ships")]
             public GameObject AttackerAlly;
+            public GameObject TankAlly;
 
             [Header("Enemy ships")]
             public GameObject AttackerEnemy;
+            public GameObject TankEnemy;
 
             [HideInInspector] public GameObject AllyParent;
             [HideInInspector] public GameObject EnemyParent;
@@ -55,8 +57,10 @@ namespace BOYAREngine.Controller
         public int Points;
 
         [Header("Battle settings")]
-        public int AllyShipsCount;
-        public int EnemyShipsCount;
+        public int AllyAttackers;
+        public int AllyTanks;
+        public int EnemyAttackers;
+        public int EnemyTanks;
 
         private int _secondsInBattle;
         private int _minutesInBattle;
@@ -85,17 +89,40 @@ namespace BOYAREngine.Controller
             Setup.MainMenuStateParent.SetActive(false);
             Setup.GameStateParent.SetActive(true);
 
-            Ships.AllyParent = Instantiate(new GameObject("== ALLY =="), Setup.GameStateParent.transform);
-            Ships.EnemyParent = Instantiate(new GameObject("== ENEMY =="), Setup.GameStateParent.transform);
+            Ships.AllyParent = new GameObject("== ALLY ==");
+            Ships.AllyParent.transform.parent = Setup.GameStateParent.transform;
+            Ships.EnemyParent = new GameObject("== ENEMY ==");
+            Ships.EnemyParent.transform.parent = Setup.GameStateParent.transform;
 
-            for (var i = 0; i < AllyShipsCount; i++)
+            SpawnAllyShips();
+            SpawnEnemyShips();
+        }
+
+        private void SpawnAllyShips()
+        {
+            // Attacker
+            for (var i = 0; i < AllyAttackers; i++)
             {
                 Instantiate(Ships.AttackerAlly, Ships.SpawnPositionAlly.position, Quaternion.identity, Ships.AllyParent.transform);
             }
+            // Tank
+            for (var i = 0; i < AllyTanks; i++)
+            {
+                Instantiate(Ships.TankAlly, Ships.SpawnPositionAlly.position, Quaternion.identity, Ships.AllyParent.transform);
+            }
+        }
 
-            for (var i = 0; i < EnemyShipsCount; i++)
+        private void SpawnEnemyShips()
+        {
+            // Attacker
+            for (var i = 0; i < EnemyAttackers; i++)
             {
                 Instantiate(Ships.AttackerEnemy, Ships.SpawnPositionEnemy.position, Quaternion.identity, Ships.EnemyParent.transform);
+            }
+            // Tank
+            for (var i = 0; i < EnemyTanks; i++)
+            {
+                Instantiate(Ships.TankEnemy, Ships.SpawnPositionEnemy.position, Quaternion.identity, Ships.EnemyParent.transform);
             }
         }
 

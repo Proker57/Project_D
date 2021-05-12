@@ -47,13 +47,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Ship: {fileID: 0}
+  IsAlly: 0
   _rigidbody2D: {fileID: 5913745395677494199}
-  _sideInBattle:
-    serializedVersion: 2
-    m_Bits: 64
-  _bullet:
-    serializedVersion: 2
-    m_Bits: 8
 --- !u!212 &3102871161075532822
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -95,7 +90,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 1
   m_Sprite: {fileID: 21300000, guid: a1ceebdd50528374697b44fc22f84c54, type: 3}
-  m_Color: {r: 0.8841527, g: 1, b: 0.333, a: 1}
+  m_Color: {r: 0.6929343, g: 1, b: 0.33333337, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
