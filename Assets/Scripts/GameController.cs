@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using BOYAREngine.Units;
 using BOYAREngine.Utils;
 using UnityEngine;
 using UnityEngine.UI;
@@ -40,13 +41,10 @@ namespace BOYAREngine.Controller
             public Transform SpawnPositionAlly;
             public Transform SpawnPositionEnemy;
 
-            [Header("Ally ships")]
-            public GameObject AttackerAlly;
-            public GameObject TankAlly;
-
-            [Header("Enemy ships")]
-            public GameObject AttackerEnemy;
-            public GameObject TankEnemy;
+            [Header("Ships")]
+            public GameObject Attacker;
+            public GameObject Tank;
+            public GameObject Medic;
 
             [HideInInspector] public GameObject AllyParent;
             [HideInInspector] public GameObject EnemyParent;
@@ -59,8 +57,10 @@ namespace BOYAREngine.Controller
         [Header("Battle settings")]
         public int AllyAttackers;
         public int AllyTanks;
+        public int AllyMedics;
         public int EnemyAttackers;
         public int EnemyTanks;
+        public int EnemyMedics;
 
         private int _secondsInBattle;
         private int _minutesInBattle;
@@ -70,7 +70,7 @@ namespace BOYAREngine.Controller
             Instance = this;
         }
 
-        private void Update()
+        private void LateUpdate()
         {
             if (_isInBattle && (Setup.AllyShips.Count == 0 || Setup.EnemyShips.Count == 0))
             {
@@ -84,6 +84,7 @@ namespace BOYAREngine.Controller
 
             _secondsInBattle = 0;
             _minutesInBattle = 0;
+            Setup.TimeText.text = _minutesInBattle.ToString("00") + ":" + _secondsInBattle.ToString("00");
             StartCoroutine(TimeInBattle());
 
             Setup.MainMenuStateParent.SetActive(false);
@@ -103,12 +104,20 @@ namespace BOYAREngine.Controller
             // Attacker
             for (var i = 0; i < AllyAttackers; i++)
             {
-                Instantiate(Ships.AttackerAlly, Ships.SpawnPositionAlly.position, Quaternion.identity, Ships.AllyParent.transform);
+                var ship = Instantiate(Ships.Attacker, Ships.SpawnPositionAlly.position, Quaternion.identity, Ships.AllyParent.transform);
+                ship.GetComponentInChildren<UnitBase>().IsAlly = true;
             }
             // Tank
             for (var i = 0; i < AllyTanks; i++)
             {
-                Instantiate(Ships.TankAlly, Ships.SpawnPositionAlly.position, Quaternion.identity, Ships.AllyParent.transform);
+                var ship = Instantiate(Ships.Tank, Ships.SpawnPositionAlly.position, Quaternion.identity, Ships.AllyParent.transform);
+                ship.GetComponentInChildren<UnitBase>().IsAlly = true;
+            }
+            // Medic
+            for (var i = 0; i < AllyMedics; i++)
+            {
+                var ship = Instantiate(Ships.Medic, Ships.SpawnPositionAlly.position, Quaternion.identity, Ships.AllyParent.transform);
+                ship.GetComponentInChildren<UnitBase>().IsAlly = true;
             }
         }
 
@@ -117,12 +126,20 @@ namespace BOYAREngine.Controller
             // Attacker
             for (var i = 0; i < EnemyAttackers; i++)
             {
-                Instantiate(Ships.AttackerEnemy, Ships.SpawnPositionEnemy.position, Quaternion.identity, Ships.EnemyParent.transform);
+                var ship = Instantiate(Ships.Attacker, Ships.SpawnPositionEnemy.position, Quaternion.identity, Ships.EnemyParent.transform);
+                ship.GetComponentInChildren<UnitBase>().IsAlly = false;
             }
             // Tank
             for (var i = 0; i < EnemyTanks; i++)
             {
-                Instantiate(Ships.TankEnemy, Ships.SpawnPositionEnemy.position, Quaternion.identity, Ships.EnemyParent.transform);
+                var ship = Instantiate(Ships.Tank, Ships.SpawnPositionEnemy.position, Quaternion.identity, Ships.EnemyParent.transform);
+                ship.GetComponentInChildren<UnitBase>().IsAlly = false;
+            }
+            // Medic
+            for (var i = 0; i < EnemyMedics; i++)
+            {
+                var ship = Instantiate(Ships.Medic, Ships.SpawnPositionEnemy.position, Quaternion.identity, Ships.EnemyParent.transform);
+                ship.GetComponentInChildren<UnitBase>().IsAlly = false;
             }
         }
 
@@ -149,7 +166,6 @@ namespace BOYAREngine.Controller
                     _minutesInBattle++;
                     _secondsInBattle = 0;
                 }
-
                 yield return new WaitForSeconds(1f);
                 _secondsInBattle++;
                 Setup.TimeText.text = _minutesInBattle.ToString("00") + ":" + _secondsInBattle.ToString("00");

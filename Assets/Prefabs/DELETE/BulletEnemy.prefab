@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 5913745395677494199}
   - component: {fileID: -5085728964551436410}
   m_Layer: 3
-  m_Name: BulletAlly
+  m_Name: BulletEnemy
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -46,9 +46,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e1ce5f675a813aa49a5a00eb1c2f682c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _spriteRenderer: {fileID: 3102871161075532822}
+  _rigidbody2D: {fileID: 5913745395677494199}
   Ship: {fileID: 0}
   IsAlly: 0
-  _rigidbody2D: {fileID: 5913745395677494199}
 --- !u!212 &3102871161075532822
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -90,7 +91,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 1
   m_Sprite: {fileID: 21300000, guid: a1ceebdd50528374697b44fc22f84c54, type: 3}
-  m_Color: {r: 0.6929343, g: 1, b: 0.33333337, a: 1}
+  m_Color: {r: 1, g: 0.5686275, b: 0.907007, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0

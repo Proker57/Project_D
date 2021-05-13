@@ -16,6 +16,11 @@ namespace BOYAREngine.MainMenu
             GameController.Instance.AllyTanks = int.Parse(input.text);
         }
 
+        public void SetAllyMedicsCount(InputField input)
+        {
+            GameController.Instance.AllyMedics = int.Parse(input.text);
+        }
+
         public void SetEnemyAttackersCount(InputField input)
         {
             GameController.Instance.EnemyAttackers = int.Parse(input.text);
@@ -24,6 +29,12 @@ namespace BOYAREngine.MainMenu
         public void SetEnemyTanksCount(InputField input)
         {
             GameController.Instance.EnemyTanks = int.Parse(input.text);
+        }
+
+
+        public void SetEnemyMedicsCount(InputField input)
+        {
+            GameController.Instance.EnemyMedics = int.Parse(input.text);
         }
     }
 }

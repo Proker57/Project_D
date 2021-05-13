@@ -1,4 +1,6 @@
 using System.Collections;
+using System.Collections.Generic;
+using BOYAREngine.Ui;
 using BOYAREngine.Utils;
 using UnityEngine;
 using UnityEngine.UI;
@@ -10,7 +12,7 @@ namespace BOYAREngine.Units
     {
         [Header("Health")]
         public int HealthMax;
-        protected int HealthCurrent;
+        internal int HealthCurrent;
 
         [Header("Movement")]
         [SerializeField] protected float MoveSpeed;
@@ -28,8 +30,8 @@ namespace BOYAREngine.Units
         [SerializeField] protected float SearchTargetRadius;
         protected bool CanShoot = true;
         protected bool IsShooting = true;
-        [SerializeField] protected LayerMask TargetMask;
         [SerializeField] protected ObjectPool BulletsPool;
+        protected LayerMask TargetMask;
         internal Transform ShootTargetTransform;
 
         [Header("Special")]
@@ -40,33 +42,40 @@ namespace BOYAREngine.Units
         [SerializeField] private float _specialPassiveIncome;
         private float _specialPassiveIncomeCurrent;
         protected bool IsSpecialActive;
+        private bool _canShowSpecialCountdown;
 
         [Header("UI")]
         [SerializeField] private GameObject _hpGo;
         [SerializeField] private Image _hpBar;
+        [SerializeField] private Image _hpFrame;
         [SerializeField] private GameObject _specialGo;
         [SerializeField] private Image _specialBar;
+        [SerializeField] private Image _specialFrame;
         [SerializeField] private GameObject _specialCountdownGo;
         [SerializeField] private Image _specialCountdownBar;
+        [SerializeField] private Image _specialCountdownFrame;
 
         [Header("FX")]
-        [SerializeField] private SpriteRenderer _spriteRenderer;
+        public SpriteRenderer SpriteRenderer;
         [SerializeField] private ParticleSystem _deathFx;
 
         [Space]
-        [SerializeField] internal bool IsAlly;
+        internal bool IsAlly;
 
-        private void Start()
+        protected virtual void Start()
         {
+            SetBattleSide();
+
             HealthCurrent = HealthMax;
             _specialPassiveIncomeCurrent = _specialPassiveIncome;
 
             CanMove = true;
             CanShoot = true;
-            _spriteRenderer.enabled = true;
-            _hpGo.SetActive(true);
-            _specialGo.SetActive(true);
-            _specialCountdownGo.SetActive(false);
+            _canShowSpecialCountdown = true;
+            SpriteRenderer.enabled = true;
+            //_hpGo.SetActive(true);
+            //_specialGo.SetActive(true);
+            //_specialCountdownGo.SetActive(false);
         }
 
         protected virtual void Update()
@@ -78,17 +87,6 @@ namespace BOYAREngine.Units
 
         public virtual void OnTriggerEnter2D(Collider2D other)
         {
-            if (other.gameObject.GetComponent<BulletBase>() != null)
-            {
-                var bullet = other.gameObject.GetComponent<BulletBase>();
-
-                if (bullet.IsAlly != IsAlly)
-                {
-                    ReceiveDamage(bullet.ReceiveDamage());
-                    bullet.gameObject.SetActive(false);
-                }
-            }
-
             if (IsAlly)
             {
                 if (other.gameObject.GetComponent<Enemy>() == null) return;
@@ -110,10 +108,10 @@ namespace BOYAREngine.Units
                 HealthCurrent = 0;
 
                 var fxMain = _deathFx.main;
-                fxMain.startColor = _spriteRenderer.color;
+                fxMain.startColor = SpriteRenderer.color;
                 _deathFx.Play();
 
-                _spriteRenderer.enabled = false;
+                SpriteRenderer.enabled = false;
                 CanMove = false;
                 CanShoot = false;
 
@@ -122,6 +120,18 @@ namespace BOYAREngine.Units
                 _specialCountdownGo.SetActive(false);
 
                 Invoke(nameof(Death), 1f);
+            }
+
+            UpdateHpUi();
+        }
+
+        public void ReceiveHeal(int healAmount)
+        {
+            HealthCurrent += healAmount;
+
+            if (HealthCurrent >= HealthMax)
+            {
+                HealthCurrent = HealthMax;
             }
 
             UpdateHpUi();
@@ -150,7 +160,7 @@ namespace BOYAREngine.Units
                 _isMovingToDestination = true;
             }
 
-            if (Vector2.Distance(transform.position, _currentDestination) <= 0.001f)
+            if (Vector2.Distance(transform.position, _currentDestination) <= 0.01f)
             {
                 _isMovingToDestination = false;
             }
@@ -188,7 +198,10 @@ namespace BOYAREngine.Units
         {
             IsSpecialActive = true;
             _specialDurationCurrent = SpecialDuration;
-            _specialCountdownGo.SetActive(true);
+            if (_canShowSpecialCountdown)
+            {
+                _specialCountdownGo.SetActive(true);
+            }
 
             StartCoroutine(SpecialCountdown());
             SpecialCurrent = 0f;
@@ -255,8 +268,112 @@ namespace BOYAREngine.Units
 
         public void SearchForTarget()
         {
-            var hit = Physics2D.OverlapCircleAll(transform.position, SearchTargetRadius, TargetMask);
-            ShootTargetTransform = hit.Length > 0 ? hit[Random.Range(0, hit.Length)].transform : null;
+            var result = new List<Collider2D>();
+            var cf = new ContactFilter2D();
+            cf.useTriggers = true;
+            cf.SetLayerMask(TargetMask);
+
+            Physics2D.OverlapCircle(transform.position, SearchTargetRadius, cf, result);
+            ShootTargetTransform = result.Count > 0 ? result[Random.Range(0, result.Count)].transform : null;
+        }
+
+        private void SetBattleSide()
+        {
+            if (IsAlly)
+            {
+                gameObject.layer = LayerMask.NameToLayer("Ally");
+                TargetMask = LayerMask.GetMask("Enemy");
+                gameObject.AddComponent<Ally>();
+
+                // Body color
+                if (ColorUtility.TryParseHtmlString("#00FF24", out var color))
+                {
+                    SpriteRenderer.color = color;
+                }
+                // Hp color
+                if (ColorUtility.TryParseHtmlString("#9AEE49", out var hpColor))
+                {
+                    _hpBar.color = hpColor;
+                    _hpFrame.color = hpColor;
+                }
+                // "Special" color
+                if (ColorUtility.TryParseHtmlString("#97B27D", out color))
+                {
+                    _specialBar.color = color;
+                    _specialFrame.color = color;
+                }
+                // Special countdown color
+                if (ColorUtility.TryParseHtmlString("#A4B297", out color))
+                {
+                    _specialCountdownBar.color = color;
+                    _specialCountdownFrame.color = color;
+                }
+            }
+            else
+            {
+                gameObject.layer = LayerMask.NameToLayer("Enemy");
+                TargetMask = LayerMask.GetMask("Ally");
+                gameObject.AddComponent<Enemy>();
+
+                // Body color
+                if (ColorUtility.TryParseHtmlString("#FF0000", out var color))
+                {
+                    SpriteRenderer.color = color;
+                }
+                // Hp color
+                if (ColorUtility.TryParseHtmlString("#FF0000", out color))
+                {
+                    _hpBar.color = color;
+                    _hpFrame.color = color;
+                }
+                // "Special" color
+                if (ColorUtility.TryParseHtmlString("#B17C7C", out color))
+                {
+                    _specialBar.color = color;
+                    _specialFrame.color = color;
+                }
+                // Special countdown color
+                if (ColorUtility.TryParseHtmlString("#B19F9F", out color))
+                {
+                    _specialCountdownBar.color = color;
+                    _specialCountdownFrame.color = color;
+                }
+            }
+        }
+
+        private void ToggleShipUi(int type)
+        {
+            switch (type)
+            {
+                case 0:
+                    _hpGo.SetActive(!_hpGo.activeSelf);
+                    break;
+                case 1:
+                    _specialGo.SetActive(!_specialGo.activeSelf);
+                    break;
+                case 2:
+                    _canShowSpecialCountdown = !_canShowSpecialCountdown;
+                    if (_specialCountdownGo.activeSelf)
+                    {
+                        _specialCountdownGo.SetActive(!_specialCountdownGo.activeSelf);
+                    }
+
+                    if (_specialDurationCurrent > 0.001f && _canShowSpecialCountdown)
+                    {
+                        _specialCountdownGo.SetActive(true);
+                    }
+                    break;
+            }
+        }
+
+        private void OnEnable()
+        {
+            UiSettings.ToggleShipUi += ToggleShipUi;
+        }
+
+        private void OnDisable()
+        {
+            UiSettings.ToggleShipUi -= ToggleShipUi;
         }
     }
 }

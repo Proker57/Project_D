@@ -4,7 +4,14 @@ namespace BOYAREngine.Units
 {
     public class ForceField : MonoBehaviour
     {
-        /*[SerializeField] private UnitBase _unitBase;
+        [SerializeField] private UnitBase _unitBase;
+        [SerializeField] private SpriteRenderer _spriteRenderer;
+        [SerializeField] private float _alpha;
+
+        private void Start()
+        {
+            _spriteRenderer.color = new Color(_unitBase.SpriteRenderer.color.r, _unitBase.SpriteRenderer.color.g, _unitBase.SpriteRenderer.color.b, _alpha);
+        }
 
         private void OnTriggerEnter2D(Collider2D other)
         {
@@ -17,7 +24,7 @@ namespace BOYAREngine.Units
                     bullet.gameObject.SetActive(false);
                 }
             }
-        }*/
+        }
     }
 }
 

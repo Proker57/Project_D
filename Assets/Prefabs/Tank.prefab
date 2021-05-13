@@ -86,13 +86,12 @@ GameObject:
   - component: {fileID: 2464573743603680788}
   - component: {fileID: 2464573743603680787}
   - component: {fileID: 2464573743603680795}
-  - component: {fileID: 2464573743603680793}
   - component: {fileID: 2464573743603680789}
   - component: {fileID: 2464573743603680791}
   - component: {fileID: 2464573743603680792}
   - component: {fileID: 4426658648071900018}
   - component: {fileID: 5228501924967356666}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: Ship
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -138,9 +137,6 @@ MonoBehaviour:
   ReloadTime: 3
   ShootBufferDistance: 0.3
   SearchTargetRadius: 100
-  TargetMask:
-    serializedVersion: 2
-    m_Bits: 128
   BulletsPool: {fileID: 2464573743603680795}
   SpecialCurrent: 0
   _specialMax: 15
@@ -148,13 +144,15 @@ MonoBehaviour:
   _specialPassiveIncome: 1
   _hpGo: {fileID: 2464573744147625627}
   _hpBar: {fileID: 2464573743636850366}
+  _hpFrame: {fileID: 2464573744044248784}
   _specialGo: {fileID: 2464573745441077912}
   _specialBar: {fileID: 2464573743826058504}
+  _specialFrame: {fileID: 2464573743448929606}
   _specialCountdownGo: {fileID: 2464573744901323570}
   _specialCountdownBar: {fileID: 2464573744388401684}
-  _spriteRenderer: {fileID: 2464573743603680789}
+  _specialCountdownFrame: {fileID: 2464573744997817356}
+  SpriteRenderer: {fileID: 2464573743603680789}
   _deathFx: {fileID: 4426658648071900018}
-  IsAlly: 1
   _forceField: {fileID: 3179279724015751519}
 --- !u!114 &2464573743603680795
 MonoBehaviour:
@@ -172,18 +170,6 @@ MonoBehaviour:
   _objectToPool: {fileID: 3102871161075532820, guid: 5593517331087674eaab074ce0963489, type: 3}
   Amount: 4
   _pooledObjects: []
---- !u!114 &2464573743603680793
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2464573743603680786}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 51dc1ac489c77de4388bc5f5e97071b7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!212 &2464573743603680789
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -5671,7 +5657,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2464573745156246490}
   m_Layer: 0
-  m_Name: Tank Ally
+  m_Name: Tank
   m_TagString: Ship
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5842,7 +5828,7 @@ CircleCollider2D:
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
-  m_Radius: 1.27
+  m_Radius: 3
 --- !u!212 &3179279724015751517
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -5907,4 +5893,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _unitBase: {fileID: 2464573743603680787}
-  _spriteRenderer: {fileID: 2464573743603680789}
+  _spriteRenderer: {fileID: 3179279724015751517}
+  _alpha: 0.3
