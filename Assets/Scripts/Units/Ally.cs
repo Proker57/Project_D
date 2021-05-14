@@ -15,21 +15,20 @@ namespace BOYAREngine.Units
         private void AddShip()
         {
             _gc.Setup.AllyShips.Add(gameObject);
-            _gc.Setup.AlliesCountText.text = "Allies: " + _gc.Setup.AllyShips.Count;
+            UiUpdateCounter();
             _gc.Setup.CameraTargetGroup.Targets.Add(gameObject);
         }
 
         private void RemoveShip()
         {
             _gc.Setup.AllyShips.Remove(gameObject);
-            _gc.Setup.AlliesCountText.text = "Allies: " + _gc.Setup.AllyShips.Count;
+            UiUpdateCounter();
             _gc.Setup.CameraTargetGroup.Targets.Remove(gameObject);
+        }
 
-//            if (_gc.Setup.AllyShips.Count == 0)
-//            {
-//                Debug.Log("Ally");
-//                _gc.EndBattle();
-//            }
+        private void UiUpdateCounter()
+        {
+            _gc.Setup.AlliesCountText.text = _gc.Setup.AllyShips.Count + " - allies";
         }
 
         private void OnEnable()

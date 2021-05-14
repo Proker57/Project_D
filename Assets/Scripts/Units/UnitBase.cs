@@ -129,6 +129,7 @@ namespace BOYAREngine.Units
                 _hpGo.SetActive(false);
                 _specialGo.SetActive(false);
                 _specialCountdownGo.SetActive(false);
+                NameTagGo.SetActive(false);
 
                 Invoke(nameof(Death), 1f);
             }

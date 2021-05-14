@@ -59,6 +59,7 @@ namespace BOYAREngine.Controller
 
         [Header("Points")]
         public int Points;
+        public int PointsEarned;
 
         [Header("Battle settings [Amount of ships]")]
         public int AllyAttackers;
@@ -88,13 +89,15 @@ namespace BOYAREngine.Controller
         {
             if (_isInBattle && (Setup.AllyShips.Count == 0 || Setup.EnemyShips.Count == 0))
             {
-                EndBattle();
+                EndBattle(true);
             }
         }
 
         public void StartBattle()
         {
             _isInBattle = true;
+
+            PointsEarned = 0;
 
             _secondsInBattle = 0;
             _minutesInBattle = 0;
@@ -167,10 +170,15 @@ namespace BOYAREngine.Controller
             }
         }
 
-        public void EndBattle()
+        public void EndBattle(bool isFullBattle)
         {
             Destroy(Ships.AllyParent);
             Destroy(Ships.EnemyParent);
+
+            if (isFullBattle)
+            {
+                Points += PointsEarned;
+            }
 
             Setup.MainMenuStateParent.SetActive(true);
             Setup.GameStateParent.SetActive(false);

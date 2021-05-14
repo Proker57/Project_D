@@ -1,4 +1,3 @@
-using System;
 using BOYAREngine.Controller;
 using BOYAREngine.Units;
 using UnityEngine;
@@ -18,6 +17,9 @@ namespace BOYAREngine.Ui
         [SerializeField] private GameObject _specialBarButton;
         [SerializeField] private GameObject _specialCountdownButton;
         [SerializeField] private GameObject _nameTag;
+        [SerializeField] private GameObject _escapeBattle;
+
+        private bool _isNameTagToggled;
 
         public void ToggleUiSettings()
         {
@@ -25,6 +27,7 @@ namespace BOYAREngine.Ui
             _specialBarButton.SetActive(!_specialBarButton.activeSelf);
             _specialCountdownButton.SetActive(!_specialCountdownButton.activeSelf);
             _nameTag.SetActive(!_nameTag.activeSelf);
+            _escapeBattle.SetActive(!_escapeBattle.activeSelf);
         }
 
         public void ToggleBoardSpecificNameTagAllyOn(string shipType)
@@ -36,6 +39,16 @@ namespace BOYAREngine.Ui
                 {
                     unit.NameTagGo.SetActive(true);
                 }
+                else
+                {
+                    unit.NameTagGo.SetActive(false);
+                }
+            }
+
+            foreach (var ship in GameController.Instance.Setup.EnemyShips)
+            {
+                var unit = ship.GetComponent<UnitBase>();
+                unit.NameTagGo.SetActive(false);
             }
         }
 
@@ -44,10 +57,13 @@ namespace BOYAREngine.Ui
             foreach (var ship in GameController.Instance.Setup.AllyShips)
             {
                 var unit = ship.GetComponent<UnitBase>();
-                if (unit.Type.Equals(shipType))
-                {
-                    unit.NameTagGo.SetActive(false);
-                }
+                unit.NameTagGo.SetActive(_isNameTagToggled);
+            }
+
+            foreach (var ship in GameController.Instance.Setup.EnemyShips)
+            {
+                var unit = ship.GetComponent<UnitBase>();
+                unit.NameTagGo.SetActive(_isNameTagToggled);
             }
         }
 
@@ -60,6 +76,16 @@ namespace BOYAREngine.Ui
                 {
                     unit.NameTagGo.SetActive(true);
                 }
+                else
+                {
+                    unit.NameTagGo.SetActive(false);
+                }
+            }
+
+            foreach (var ship in GameController.Instance.Setup.AllyShips)
+            {
+                var unit = ship.GetComponent<UnitBase>();
+                unit.NameTagGo.SetActive(false);
             }
         }
 
@@ -68,11 +94,19 @@ namespace BOYAREngine.Ui
             foreach (var ship in GameController.Instance.Setup.EnemyShips)
             {
                 var unit = ship.GetComponent<UnitBase>();
-                if (unit.Type.Equals(shipType))
-                {
-                    unit.NameTagGo.SetActive(false);
-                }
+                unit.NameTagGo.SetActive(_isNameTagToggled);
             }
+
+            foreach (var ship in GameController.Instance.Setup.AllyShips)
+            {
+                var unit = ship.GetComponent<UnitBase>();
+                unit.NameTagGo.SetActive(_isNameTagToggled);
+            }
+        }
+
+        public void EscapeBattle()
+        {
+            GameController.Instance.EndBattle(false);
         }
 
         public void ToggleHpBar()
@@ -92,6 +126,7 @@ namespace BOYAREngine.Ui
 
         public void ToggleNameTag()
         {
+            _isNameTagToggled = !_isNameTagToggled;
             ToggleShipUi?.Invoke(3);
         }
     }

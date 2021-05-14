@@ -17,22 +17,21 @@ namespace BOYAREngine.Units
         private void AddShip()
         {
             _gc.Setup.EnemyShips.Add(gameObject);
-            _gc.Setup.EnemiesCountText.text = "Enemies: " + _gc.Setup.EnemyShips.Count;
+            UiUpdateCounter();
             _gc.Setup.CameraTargetGroup.Targets.Add(gameObject);
         }
 
         private void RemoveShip()
         {
             _gc.Setup.EnemyShips.Remove(gameObject);
-            _gc.Setup.EnemiesCountText.text = "Enemies: " + _gc.Setup.EnemyShips.Count;
-            _gc.Points += _unitBase.HealthMax;
+            UiUpdateCounter();
+            _gc.PointsEarned += _unitBase.HealthMax;
             _gc.Setup.CameraTargetGroup.Targets.Remove(gameObject);
+        }
 
-//            if (_gc.Setup.EnemyShips.Count == 0)
-//            {
-//                Debug.Log("Enemy");
-//                _gc.EndBattle();
-//            }
+        private void UiUpdateCounter()
+        {
+            _gc.Setup.EnemiesCountText.text = "enemies - " + _gc.Setup.EnemyShips.Count;
         }
 
         private void OnEnable()
