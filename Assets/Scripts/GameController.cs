@@ -27,13 +27,20 @@ namespace BOYAREngine.Controller
             public Text AlliesCountText;
             public Text EnemiesCountText;
             public Text TimeText;
+            [Space]
+            public Text AllyAttackers;
+            public Text AllyTanks;
+            public Text AllyMedics;
+            //
+            public Text EnemyAttackers;
+            public Text EnemyTanks;
+            public Text EnemyMedics;
 
             [Space]
             public CameraTargetGroup CameraTargetGroup;
             public List<GameObject> AllyShips;
             public List<GameObject> EnemyShips;
         }
-        public NoneGameSettings Setup;
 
         [System.Serializable]
         public struct AvailableShips
@@ -49,19 +56,26 @@ namespace BOYAREngine.Controller
             [HideInInspector] public GameObject AllyParent;
             [HideInInspector] public GameObject EnemyParent;
         }
-        public AvailableShips Ships;
 
         [Header("Points")]
         public int Points;
 
-        [Header("Battle settings")]
+        [Header("Battle settings [Amount of ships]")]
         public int AllyAttackers;
+        public int AllyAttackersCurrent;
         public int AllyTanks;
+        public int AllyTanksCurrent;
         public int AllyMedics;
+        public int AllyMedicsCurrent;
         public int EnemyAttackers;
+        public int EnemyAttackersCurrent;
         public int EnemyTanks;
+        public int EnemyTanksCurrent;
         public int EnemyMedics;
+        public int EnemyMedicsCurrent;
 
+        public NoneGameSettings Setup;
+        public AvailableShips Ships;
         private int _secondsInBattle;
         private int _minutesInBattle;
 
@@ -87,6 +101,14 @@ namespace BOYAREngine.Controller
             Setup.TimeText.text = _minutesInBattle.ToString("00") + ":" + _secondsInBattle.ToString("00");
             StartCoroutine(TimeInBattle());
 
+            AllyAttackersCurrent = 0;
+            AllyTanksCurrent = 0;
+            AllyMedicsCurrent = 0;
+
+            EnemyAttackersCurrent = 0;
+            EnemyTanksCurrent = 0;
+            EnemyMedicsCurrent = 0;
+
             Setup.MainMenuStateParent.SetActive(false);
             Setup.GameStateParent.SetActive(true);
 
@@ -97,6 +119,8 @@ namespace BOYAREngine.Controller
 
             SpawnAllyShips();
             SpawnEnemyShips();
+
+            UiUpdateShipBoards();
         }
 
         private void SpawnAllyShips()
@@ -170,6 +194,17 @@ namespace BOYAREngine.Controller
                 _secondsInBattle++;
                 Setup.TimeText.text = _minutesInBattle.ToString("00") + ":" + _secondsInBattle.ToString("00");
             }
+        }
+
+        public void UiUpdateShipBoards()
+        {
+            Setup.AllyAttackers.text = AllyAttackersCurrent.ToString();
+            Setup.AllyTanks.text = AllyTanksCurrent.ToString();
+            Setup.AllyMedics.text = AllyMedicsCurrent.ToString();
+
+            Setup.EnemyAttackers.text = EnemyAttackersCurrent.ToString();
+            Setup.EnemyTanks.text = EnemyTanksCurrent.ToString();
+            Setup.EnemyMedics.text = EnemyMedicsCurrent.ToString();
         }
     }
 }

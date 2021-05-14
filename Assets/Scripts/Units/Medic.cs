@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using System.Linq;
+using BOYAREngine.Controller;
 using UnityEngine;
 
 namespace BOYAREngine.Units
@@ -11,13 +11,35 @@ namespace BOYAREngine.Units
         [SerializeField] private LineRenderer _line;
 
         private Collider2D _target;
+        private GameController _gc;
+
+        private string _typeName;
 
         protected override void Start()
         {
             base.Start();
 
+            _gc = GameController.Instance;
+            _typeName = GetType().Name;
+
+            Type = _typeName;
+
             _line.startColor = SpriteRenderer.color;
             _line.endColor = SpriteRenderer.color;
+
+            if (_typeName.Equals("Medic"))
+            {
+                if (IsAlly)
+                {
+                    _gc.AllyMedicsCurrent++;
+                }
+                else
+                {
+                    _gc.EnemyMedicsCurrent++;
+                }
+
+                _gc.UiUpdateShipBoards();
+            }
         }
 
         protected override void UseSpecialAbility()
@@ -39,8 +61,6 @@ namespace BOYAREngine.Units
             }
             
             Physics2D.OverlapCircle(transform.position, SearchTargetRadius, cf, result);
-            //_target = result.Count > 0 ? result[Random.Range(0, result.Count)].transform : null;
-            Debug.Log(result.Count);
             _target = result.Count > 0 ? result[0] : null;
 
             if (_target != null)
@@ -51,7 +71,7 @@ namespace BOYAREngine.Units
                 }
 
                 _line.enabled = true;
-                Invoke(nameof(DisableLine), .25f);
+                Invoke(nameof(DisableLine), .15f);
                 _line.SetPosition(0, transform.position);
                 _line.SetPosition(1, _target.transform.position);
                 _target.GetComponent<UnitBase>().ReceiveHeal(_healPower);
@@ -61,6 +81,25 @@ namespace BOYAREngine.Units
         private void DisableLine()
         {
             _line.enabled = false;
+        }
+
+        protected override void OnDisable()
+        {
+            base.OnDisable();
+
+            if (_typeName.Equals("Medic"))
+            {
+                if (IsAlly)
+                {
+                    _gc.AllyMedicsCurrent--;
+                }
+                else
+                {
+                    _gc.EnemyMedicsCurrent--;
+                }
+
+                _gc.UiUpdateShipBoards();
+            }
         }
     }
 }

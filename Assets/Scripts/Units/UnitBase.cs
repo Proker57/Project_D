@@ -10,9 +10,10 @@ namespace BOYAREngine.Units
 {
     public class UnitBase : MonoBehaviour
     {
-        [Header("Health")]
+        [Header("Base")]
         public int HealthMax;
         internal int HealthCurrent;
+        public string Type;
 
         [Header("Movement")]
         [SerializeField] protected float MoveSpeed;
@@ -48,16 +49,23 @@ namespace BOYAREngine.Units
         [SerializeField] private GameObject _hpGo;
         [SerializeField] private Image _hpBar;
         [SerializeField] private Image _hpFrame;
+        [Space]
         [SerializeField] private GameObject _specialGo;
         [SerializeField] private Image _specialBar;
         [SerializeField] private Image _specialFrame;
+        [Space]
         [SerializeField] private GameObject _specialCountdownGo;
         [SerializeField] private Image _specialCountdownBar;
         [SerializeField] private Image _specialCountdownFrame;
+        [Space]
+        public GameObject NameTagGo;
+        [SerializeField] private Image _nameTagPanel;
+        [SerializeField] private Text _nameTagText;
 
         [Header("FX")]
         public SpriteRenderer SpriteRenderer;
         [SerializeField] private ParticleSystem _deathFx;
+        [SerializeField] private BoxCollider2D _boxCollider2D;
 
         [Space]
         internal bool IsAlly;
@@ -73,9 +81,7 @@ namespace BOYAREngine.Units
             CanShoot = true;
             _canShowSpecialCountdown = true;
             SpriteRenderer.enabled = true;
-            //_hpGo.SetActive(true);
-            //_specialGo.SetActive(true);
-            //_specialCountdownGo.SetActive(false);
+            _boxCollider2D.enabled = true;
         }
 
         protected virtual void Update()
@@ -89,13 +95,17 @@ namespace BOYAREngine.Units
         {
             if (IsAlly)
             {
-                if (other.gameObject.GetComponent<Enemy>() == null) return;
-                ShipCollided(other);
+                if (other.gameObject.GetComponent<Enemy>() != null)
+                {
+                    ShipCollided(other);
+                }
             }
             else
             {
-                if (other.gameObject.GetComponent<Ally>() == null) return;
-                ShipCollided(other);
+                if (other.gameObject.GetComponent<Ally>() != null)
+                {
+                    ShipCollided(other);
+                }
             }
         }
 
@@ -112,6 +122,7 @@ namespace BOYAREngine.Units
                 _deathFx.Play();
 
                 SpriteRenderer.enabled = false;
+                _boxCollider2D.enabled = false;
                 CanMove = false;
                 CanShoot = false;
 
@@ -140,9 +151,10 @@ namespace BOYAREngine.Units
         private void ShipCollided(Collider2D other)
         {
             var unitBase = other.GetComponent<UnitBase>();
-            ReceiveDamage(unitBase.HealthCurrent);
-            unitBase.ReceiveDamage(HealthCurrent);
-            
+            //var first = HealthCurrent;
+            var second = unitBase.HealthCurrent;
+            ReceiveDamage(second);
+            //unitBase.ReceiveDamage(first);
         }
 
         protected virtual void Death()
@@ -290,11 +302,17 @@ namespace BOYAREngine.Units
                 {
                     SpriteRenderer.color = color;
                 }
-                // Hp color
-                if (ColorUtility.TryParseHtmlString("#9AEE49", out var hpColor))
+                // NameTag
+                if (ColorUtility.TryParseHtmlString("#00FF24", out color))
                 {
-                    _hpBar.color = hpColor;
-                    _hpFrame.color = hpColor;
+                    _nameTagPanel.color = color;
+                    _nameTagText.color = color;
+                }
+                // Hp color
+                if (ColorUtility.TryParseHtmlString("#9AEE49", out color))
+                {
+                    _hpBar.color = color;
+                    _hpFrame.color = color;
                 }
                 // "Special" color
                 if (ColorUtility.TryParseHtmlString("#97B27D", out color))
@@ -319,6 +337,12 @@ namespace BOYAREngine.Units
                 if (ColorUtility.TryParseHtmlString("#FF0000", out var color))
                 {
                     SpriteRenderer.color = color;
+                }
+                // Name Tag
+                if (ColorUtility.TryParseHtmlString("#FF0000", out color))
+                {
+                    _nameTagPanel.color = color;
+                    _nameTagText.color = color;
                 }
                 // Hp color
                 if (ColorUtility.TryParseHtmlString("#FF0000", out color))
@@ -363,6 +387,9 @@ namespace BOYAREngine.Units
                         _specialCountdownGo.SetActive(true);
                     }
                     break;
+                case 3:
+                    NameTagGo.SetActive(!NameTagGo.activeSelf);
+                    break;
             }
         }
 
@@ -371,7 +398,7 @@ namespace BOYAREngine.Units
             UiSettings.ToggleShipUi += ToggleShipUi;
         }
 
-        private void OnDisable()
+        protected virtual void OnDisable()
         {
             UiSettings.ToggleShipUi -= ToggleShipUi;
         }
