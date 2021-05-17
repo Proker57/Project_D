@@ -28,7 +28,7 @@ namespace BOYAREngine.Units
 
         private void UiUpdateCounter()
         {
-            _gc.Setup.AlliesCountText.text = _gc.Setup.AllyShips.Count + " - allies";
+            _gc.Setup.AlliesCountText.text = _gc.Setup.AllyShips.Count.ToString();
         }
 
         private void OnEnable()

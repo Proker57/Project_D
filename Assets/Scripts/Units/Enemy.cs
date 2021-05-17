@@ -31,7 +31,7 @@ namespace BOYAREngine.Units
 
         private void UiUpdateCounter()
         {
-            _gc.Setup.EnemiesCountText.text = "enemies - " + _gc.Setup.EnemyShips.Count;
+            _gc.Setup.EnemiesCountText.text = _gc.Setup.EnemyShips.Count.ToString();
         }
 
         private void OnEnable()

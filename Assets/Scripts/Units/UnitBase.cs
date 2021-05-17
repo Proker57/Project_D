@@ -44,6 +44,7 @@ namespace BOYAREngine.Units
         private float _specialPassiveIncomeCurrent;
         protected bool IsSpecialActive;
         private bool _canShowSpecialCountdown;
+        private bool _canUseSpecialAbility;
 
         [Header("UI")]
         [SerializeField] private GameObject _hpGo;
@@ -80,6 +81,7 @@ namespace BOYAREngine.Units
             CanMove = true;
             CanShoot = true;
             _canShowSpecialCountdown = true;
+            _canUseSpecialAbility = true;
             SpriteRenderer.enabled = true;
             _boxCollider2D.enabled = true;
         }
@@ -125,6 +127,8 @@ namespace BOYAREngine.Units
                 _boxCollider2D.enabled = false;
                 CanMove = false;
                 CanShoot = false;
+                _canUseSpecialAbility = false;
+                _canShowSpecialCountdown = false;
 
                 _hpGo.SetActive(false);
                 _specialGo.SetActive(false);
@@ -153,9 +157,11 @@ namespace BOYAREngine.Units
         {
             var unitBase = other.GetComponent<UnitBase>();
             //var first = HealthCurrent;
-            var second = unitBase.HealthCurrent;
-            ReceiveDamage(second);
+            //var second = unitBase.HealthCurrent;
+            //ReceiveDamage(second);
             //unitBase.ReceiveDamage(first);
+            ReceiveDamage(HealthCurrent / 2);
+            unitBase.ReceiveDamage(unitBase.HealthCurrent / 2);
         }
 
         protected virtual void Death()
@@ -201,7 +207,7 @@ namespace BOYAREngine.Units
                 UpdateSpecialUi();
             }
 
-            if (SpecialCurrent >= _specialMax)
+            if (SpecialCurrent >= _specialMax && _canUseSpecialAbility)
             {
                 UseSpecialAbility();
             }
