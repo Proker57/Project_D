@@ -118,6 +118,7 @@ namespace BOYAREngine.Units
             if (HealthCurrent <= 0)
             {
                 HealthCurrent = 0;
+                Statistic.EnemyDestroyed?.Invoke();
 
                 var fxMain = _deathFx.main;
                 fxMain.startColor = SpriteRenderer.color;
