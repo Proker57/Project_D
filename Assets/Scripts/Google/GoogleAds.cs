@@ -18,7 +18,7 @@ namespace BOYAREngine.Ads
             const string adUnitId = "unexpected_platform";
 #endif
             // Create a 320x50 banner at the top of the screen.
-            BannerView = new BannerView(adUnitId, AdSize.Banner, AdPosition.Bottom);
+            BannerView = new BannerView(adUnitId, AdSize.Banner, AdPosition.TopLeft);
             // Create an empty ad request.
             var request = new AdRequest.Builder().Build();
             // Load the banner with the request.
@@ -64,6 +64,7 @@ namespace BOYAREngine.Ads
         {
             RequestBanner();
         }
+
     }
 }
 

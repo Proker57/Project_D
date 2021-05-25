@@ -27,11 +27,15 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 31612299964416
-    m_Localized: 'Points: '
+    m_Localized: 'Points:'
     m_Metadata:
       m_Items: []
   - m_Id: 97868113833984
     m_Localized: Upgrades
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872472607715328
+    m_Localized: 'Level:'
     m_Metadata:
       m_Items: []
   references:

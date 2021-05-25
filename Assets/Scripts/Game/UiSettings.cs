@@ -106,6 +106,7 @@ namespace BOYAREngine.Ui
 
         public void EscapeBattle()
         {
+            Debug.Log("Ad UiSettings");
             GameController.Instance.EndBattle(false);
         }
 

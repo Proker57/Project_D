@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using BOYAREngine.Ads;
 using BOYAREngine.Units;
 using BOYAREngine.Utils;
@@ -24,6 +25,7 @@ namespace BOYAREngine.Controller
 
             [Header("Menu UI")]
             public Text PointsText;
+            public Text LevelText;
 
             [Header("InGame UI")]
             public Text AlliesCountText;
@@ -33,35 +35,33 @@ namespace BOYAREngine.Controller
             public Text AllyAttackers;
             public Text AllyTanks;
             public Text AllyMedics;
-            //
+
             public Text EnemyAttackers;
             public Text EnemyTanks;
             public Text EnemyMedics;
-
+            [Header("InGame Background Particle System")]
+            public ParticleSystem Stars;
             [Space]
             public CameraTargetGroup CameraTargetGroup;
             public List<GameObject> AllyShips;
             public List<GameObject> EnemyShips;
+
         }
 
         [System.Serializable]
         public struct AvailableShips
         {
-            public Transform SpawnPositionAlly;
-            public Transform SpawnPositionEnemy;
-
             [Header("Ships")]
-            public GameObject Attacker;
-            public GameObject Tank;
-            public GameObject Medic;
+            public GameObject[] Prefabs;
 
             [HideInInspector] public GameObject AllyParent;
             [HideInInspector] public GameObject EnemyParent;
         }
 
-        [Header("Points")]
+        [Header("Progress")]
         public int Points;
         public int PointsEarned;
+        public int Level;
 
         [Header("Battle settings [Amount of ships]")]
         public int AllyAttackers;
@@ -77,16 +77,21 @@ namespace BOYAREngine.Controller
         public int EnemyMedics;
         public int EnemyMedicsCurrent;
 
+        public int[] Counts;
+
         public NoneGameSettings Setup;
         public AvailableShips Ships;
+
         private GoogleAds _googleAds;
         private int _secondsInBattle;
         private int _minutesInBattle;
 
+        private bool _isGameLoaded;
+
         private void Awake()
         {
             Instance = this;
-            // Initialize the Google Mobile Ads SDK.
+
             _googleAds = new GoogleAds();
             MobileAds.Initialize(initStatus => { });
         }
@@ -95,26 +100,33 @@ namespace BOYAREngine.Controller
         {
             _googleAds.RequestBanner();
 
-            UiUpdatePoints();
-        }
+            Load();
 
-        private void LateUpdate()
-        {
-            if (_isInBattle && (Setup.AllyShips.Count == 0 || Setup.EnemyShips.Count == 0))
+            Counts = new[]
             {
-                EndBattle(true);
-            }
+                AllyAttackers, EnemyAttackers,
+                AllyTanks, EnemyTanks,
+                AllyMedics, EnemyMedics
+            };
+
+            UiUpdatePoints();
+            UiUpdateLevelText();
+
+            _isGameLoaded = true;
+
+            Debug.Log(Application.systemLanguage);
         }
 
         public void StartBattle()
         {
+            Save();
             _isInBattle = true;
 
             PointsEarned = 0;
 
             _secondsInBattle = 0;
             _minutesInBattle = 0;
-            Setup.TimeText.text = _minutesInBattle.ToString("00") + ":" + _secondsInBattle.ToString("00");
+            Setup.TimeText.text = $"{_minutesInBattle:00}:{_secondsInBattle:00}";
             StartCoroutine(TimeInBattle());
 
             AllyAttackersCurrent = 0;
@@ -133,106 +145,84 @@ namespace BOYAREngine.Controller
             Ships.EnemyParent = new GameObject("== ENEMY ==");
             Ships.EnemyParent.transform.parent = Setup.GameStateParent.transform;
 
-            //SpawnAllyShips();
-            //SpawnEnemyShips();
+            Setup.Stars.Play();
 
             MiniTask.Run(0f, SpawnShips);
 
             _googleAds.BannerView.Destroy();
-
-            UiUpdateShipBoards();
         }
 
         private void SpawnShips()
         {
-            SpawnAllyShips();
-            SpawnEnemyShips();
-        }
+            var range = 10 / Ships.Prefabs.Length;
+            for (var i = 0; i < Ships.Prefabs.Length; i++)
+            {
+                var index = i * 2;
+                // Ally
+                for (var j = 0; j < Counts[index]; j++)
+                {
+                    var startPos = new Vector2(Random.Range(10f + i * range, 10f + i * range + range), Random.Range(-9f, 9f));
+                    var ship = Instantiate(Ships.Prefabs[i], startPos, Quaternion.identity, Ships.AllyParent.transform);
+                    ship.GetComponentInChildren<UnitBase>().IsAlly = true;
+                }
+                // Enemy
+                for (var j = 0; j < Counts[index + 1]; j++)
+                {
+                    var startPos = new Vector2(Random.Range(-10f - i * range, -10f - i * range + range), Random.Range(-9f, 9f));
+                    var ship = Instantiate(Ships.Prefabs[i], startPos, Quaternion.identity, Ships.EnemyParent.transform);
+                    ship.GetComponentInChildren<UnitBase>().IsAlly = false;
+                }
+            }
 
-        private void SpawnAllyShips()
-        {
-            
-            // Attacker
-            for (var i = 0; i < AllyAttackers; i++)
-            {
-                var startPos = new Vector2(Random.Range(10f, 15f), Random.Range(-9f, 9f));
-                //var ship = Instantiate(Ships.Attacker, Ships.SpawnPositionAlly.position, Quaternion.identity, Ships.AllyParent.transform);
-                var ship = Instantiate(Ships.Attacker, startPos, Quaternion.identity, Ships.AllyParent.transform);
-                ship.GetComponentInChildren<UnitBase>().IsAlly = true;
-            }
-            // Tank
-            for (var i = 0; i < AllyTanks; i++)
-            {
-                var startPos = new Vector2(Random.Range(15f, 18f), Random.Range(-9f, 9f));
-                //var ship = Instantiate(Ships.Tank, Ships.SpawnPositionAlly.position, Quaternion.identity, Ships.AllyParent.transform);
-                var ship = Instantiate(Ships.Tank, startPos, Quaternion.identity, Ships.AllyParent.transform);
-                ship.GetComponentInChildren<UnitBase>().IsAlly = true;
-            }
-            // Medic
-            for (var i = 0; i < AllyMedics; i++)
-            {
-                var startPos = new Vector2(Random.Range(18f, 19f), Random.Range(-9f, 9f));
-                //var ship = Instantiate(Ships.Medic, Ships.SpawnPositionAlly.position, Quaternion.identity, Ships.AllyParent.transform);
-                var ship = Instantiate(Ships.Medic, startPos, Quaternion.identity, Ships.AllyParent.transform);
-                ship.GetComponentInChildren<UnitBase>().IsAlly = true;
-            }
-        }
-
-        private void SpawnEnemyShips()
-        {
-            // Attacker
-            for (var i = 0; i < EnemyAttackers; i++)
-            {
-                var startPos = new Vector2(Random.Range(-10f, -15f), Random.Range(-9f, 9f));
-                //var ship = Instantiate(Ships.Attacker, Ships.SpawnPositionEnemy.position, Quaternion.identity, Ships.EnemyParent.transform);
-                var ship = Instantiate(Ships.Attacker, startPos, Quaternion.identity, Ships.EnemyParent.transform);
-                ship.GetComponentInChildren<UnitBase>().IsAlly = false;
-            }
-            // Tank
-            for (var i = 0; i < EnemyTanks; i++)
-            {
-                var startPos = new Vector2(Random.Range(-15f, -18f), Random.Range(-9f, 9f));
-                //var ship = Instantiate(Ships.Tank, Ships.SpawnPositionEnemy.position, Quaternion.identity, Ships.EnemyParent.transform);
-                var ship = Instantiate(Ships.Tank, startPos, Quaternion.identity, Ships.EnemyParent.transform);
-                ship.GetComponentInChildren<UnitBase>().IsAlly = false;
-            }
-            // Medic
-            for (var i = 0; i < EnemyMedics; i++)
-            {
-                var startPos = new Vector2(Random.Range(-18f, -19f), Random.Range(-9f, 9f));
-                //var ship = Instantiate(Ships.Medic, Ships.SpawnPositionEnemy.position, Quaternion.identity, Ships.EnemyParent.transform);
-                var ship = Instantiate(Ships.Medic, startPos, Quaternion.identity, Ships.EnemyParent.transform);
-                ship.GetComponentInChildren<UnitBase>().IsAlly = false;
-            }
+            UiUpdateShipBoards();
         }
 
         public void EndBattle(bool isFullBattle)
         {
-            Destroy(Ships.AllyParent);
-            Destroy(Ships.EnemyParent);
+            StartCoroutine(End(isFullBattle));
+        }
 
-            if (isFullBattle)
+        private IEnumerator End(bool isFullBattle)
+        {
+            yield return new WaitForEndOfFrame();
+
+            if (_isInBattle)
             {
-                Points += PointsEarned;
+                _isInBattle = false;
+                Destroy(Ships.AllyParent);
+                Destroy(Ships.EnemyParent);
+
+                if (isFullBattle)
+                {
+                    Points += PointsEarned;
+                    UiUpdatePoints();
+
+                    Level++;
+                    UiUpdateLevelText();
+                }
+
+                Setup.MainMenuStateParent.SetActive(true);
+                Setup.GameStateParent.SetActive(false);
+
+                Setup.Stars.Clear();
+
+                _googleAds.RequestInterstitial();
+
+                StartCoroutine(WaitForAd());
+
+                Save();
             }
 
-            Setup.MainMenuStateParent.SetActive(true);
-            Setup.GameStateParent.SetActive(false);
+            yield return null;
+        }
 
-            StopCoroutine(TimeInBattle());
-
-            UiUpdatePoints();
-
-            _googleAds.RequestInterstitial();
-
-            while (!_googleAds.Interstitial.IsLoaded())
+        private IEnumerator WaitForAd()
+        {
+            if (!_googleAds.Interstitial.IsLoaded())
             {
-                Debug.Log("Wainting");
+                yield return new WaitForSecondsRealtime(1f);
             }
-
             _googleAds.Interstitial.Show();
-
-            _isInBattle = false;
         }
 
         private IEnumerator TimeInBattle()
@@ -246,13 +236,20 @@ namespace BOYAREngine.Controller
                 }
                 yield return new WaitForSeconds(1f);
                 _secondsInBattle++;
-                Setup.TimeText.text = _minutesInBattle.ToString("00") + ":" + _secondsInBattle.ToString("00");
+                Setup.TimeText.text = $"{_minutesInBattle:00}:{_secondsInBattle:00}";
             }
+
+            yield return null;
         }
 
         public void UiUpdatePoints()
         {
             Setup.PointsText.text = Points.ToString();
+        }
+
+        public void UiUpdateLevelText()
+        {
+            Setup.LevelText.text = Level.ToString();
         }
 
         public void UiUpdateShipBoards()
@@ -265,5 +262,69 @@ namespace BOYAREngine.Controller
             Setup.EnemyTanks.text = EnemyTanksCurrent.ToString();
             Setup.EnemyMedics.text = EnemyMedicsCurrent.ToString();
         }
+
+        private void OnApplicationPause(bool pause)
+        {
+            if (_isInBattle || !_isGameLoaded) return;
+            Save();
+            Debug.Log("App is Paused");
+        }
+
+        private void OnApplicationQuit()
+        {
+            if (_isInBattle) return;
+            Save();
+            Debug.Log("App is Quit");
+        }
+
+        public void Save()
+        {
+            var data = new SaveData
+            {
+                Points = Points,
+                Level = Level,
+
+                AllyAttackers = AllyAttackers,
+                AllyTanks = AllyTanks,
+                AllyMedics = AllyMedics,
+
+                EnemyAttackers = EnemyAttackers,
+                EnemyTanks = EnemyTanks,
+                EnemyMedics = EnemyMedics
+            };
+
+            SaveLoad.Save(data);
+        }
+
+        private void Load()
+        {
+            if (SaveLoad.Load() == null) return;
+            var data = SaveLoad.Load();
+            Points = data.Points;
+            Level = data.Level;
+
+            AllyAttackers = data.AllyAttackers;
+            AllyTanks = data.AllyTanks;
+            AllyMedics = data.AllyMedics;
+
+            EnemyAttackers = data.EnemyAttackers;
+            EnemyTanks = data.EnemyTanks;
+            EnemyMedics = data.EnemyMedics;
+        }
+    }
+
+    [System.Serializable]
+    public class SaveData
+    {
+        public int Points;
+        public int Level;
+
+        public int AllyAttackers;
+        public int AllyTanks;
+        public int AllyMedics;
+
+        public int EnemyAttackers;
+        public int EnemyTanks;
+        public int EnemyMedics;
     }
 }

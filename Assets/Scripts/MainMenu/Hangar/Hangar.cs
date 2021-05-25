@@ -29,12 +29,14 @@ namespace BOYAREngine.MainMenu
 
             _attackerCostText.text = _attackerCost.ToString();
             _tankCostText.text = _tankCost.ToString();
+
+            UiHangarUpdate();
         }
 
         public void ToggleHangarTab()
         {
             MainMenuEvents.CloseTabs?.Invoke();
-            _hangarGo.SetActive(!_hangarGo.activeSelf);
+            _hangarGo.SetActive(true);
 
             if (_hangarGo.activeSelf)
             {

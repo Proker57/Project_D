@@ -39,6 +39,11 @@ namespace BOYAREngine.Units
         private void OnDisable()
         {
             RemoveShip();
+
+            if (_gc.Setup.AllyShips.Count == 0)
+            {
+                _gc.EndBattle(true);
+            }
         }
     }
 }

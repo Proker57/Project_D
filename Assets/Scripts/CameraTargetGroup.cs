@@ -9,6 +9,8 @@ namespace BOYAREngine.Utils
     [RequireComponent(typeof(Camera))]
     public class CameraTargetGroup : MonoBehaviour
     {
+        public static CameraTargetGroup Instance;
+
         public List<GameObject> Targets;
 
         [Header("Camera ZoomIn/Out settings")]
@@ -23,6 +25,8 @@ namespace BOYAREngine.Utils
 
         private void Awake()
         {
+            Instance = this;
+
             _camera = GetComponent<Camera>();
         }
 

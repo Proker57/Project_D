@@ -1,5 +1,5 @@
 using System.Collections;
-using System.Collections.Generic;
+using BOYAREngine.Controller;
 using BOYAREngine.Ui;
 using BOYAREngine.Utils;
 using UnityEngine;
@@ -44,20 +44,18 @@ namespace BOYAREngine.Units
         private float _specialPassiveIncomeCurrent;
         protected bool IsSpecialActive;
         private bool _canShowSpecialCountdown;
+        private bool _isSpecialCountdownActive;
         private bool _canUseSpecialAbility;
 
         [Header("UI")]
-        [SerializeField] private GameObject _hpGo;
-        [SerializeField] private Image _hpBar;
-        [SerializeField] private Image _hpFrame;
+        [SerializeField] private SpriteRenderer _hpBarSprite;
+        [SerializeField] private SpriteRenderer _hpFrameSprite;
         [Space]
-        [SerializeField] private GameObject _specialGo;
-        [SerializeField] private Image _specialBar;
-        [SerializeField] private Image _specialFrame;
+        [SerializeField] private SpriteRenderer _specialBarSprite;
+        [SerializeField] private SpriteRenderer _specialFrameSprite;
         [Space]
-        [SerializeField] private GameObject _specialCountdownGo;
-        [SerializeField] private Image _specialCountdownBar;
-        [SerializeField] private Image _specialCountdownFrame;
+        [SerializeField] private SpriteRenderer _specialCountdownBarSprite;
+        [SerializeField] private SpriteRenderer _specialCountdownFrameSprite;
         [Space]
         public GameObject NameTagGo;
         [SerializeField] private Image _nameTagPanel;
@@ -71,6 +69,13 @@ namespace BOYAREngine.Units
         [Space]
         internal bool IsAlly;
 
+        private Rigidbody2D _rb;
+
+        private void Awake()
+        {
+            _rb = GetComponent<Rigidbody2D>();
+        }
+
         protected virtual void Start()
         {
             SetBattleSide();
@@ -82,6 +87,7 @@ namespace BOYAREngine.Units
             CanShoot = true;
             _canShowSpecialCountdown = true;
             _canUseSpecialAbility = true;
+            _isSpecialCountdownActive = true;
             SpriteRenderer.enabled = true;
             _boxCollider2D.enabled = true;
         }
@@ -131,9 +137,14 @@ namespace BOYAREngine.Units
                 _canUseSpecialAbility = false;
                 _canShowSpecialCountdown = false;
 
-                _hpGo.SetActive(false);
-                _specialGo.SetActive(false);
-                _specialCountdownGo.SetActive(false);
+                _hpBarSprite.enabled = false;
+                _hpFrameSprite.enabled = false;
+                _specialBarSprite.enabled = false;
+                _specialFrameSprite.enabled = false;
+                _specialCountdownBarSprite.enabled = false;
+                _specialCountdownFrameSprite.enabled = false;
+                
+
                 NameTagGo.SetActive(false);
 
                 Invoke(nameof(Death), 1f);
@@ -157,10 +168,6 @@ namespace BOYAREngine.Units
         private void ShipCollided(Collider2D other)
         {
             var unitBase = other.GetComponent<UnitBase>();
-            //var first = HealthCurrent;
-            //var second = unitBase.HealthCurrent;
-            //ReceiveDamage(second);
-            //unitBase.ReceiveDamage(first);
             ReceiveDamage(HealthCurrent / 2);
             unitBase.ReceiveDamage(unitBase.HealthCurrent / 2);
         }
@@ -173,10 +180,12 @@ namespace BOYAREngine.Units
         protected virtual void Movement()
         {
             if (!CanMove) return;
+
             if (!_isMovingToDestination)
             {
-                MiniTask.Run(0f, () => { _currentDestination = SearchForRandomDestination(); });
-                //_currentDestination = SearchForRandomDestination();
+                //MiniTask.Run(0f, () => { _currentDestination = SearchForRandomDestination(); });
+                _currentDestination = SearchForRandomDestination();
+
                 _isMovingToDestination = true;
             }
 
@@ -184,8 +193,14 @@ namespace BOYAREngine.Units
             {
                 _isMovingToDestination = false;
             }
+        }
 
-            transform.position = Vector2.MoveTowards(transform.position, _currentDestination, MoveSpeed * Time.deltaTime);
+        private void FixedUpdate()
+        {
+            if (CanMove)
+            {
+                _rb.position = Vector2.MoveTowards(transform.position, _currentDestination, MoveSpeed * Time.deltaTime);
+            }
         }
 
         protected void Shoot()
@@ -220,7 +235,8 @@ namespace BOYAREngine.Units
             _specialDurationCurrent = SpecialDuration;
             if (_canShowSpecialCountdown)
             {
-                _specialCountdownGo.SetActive(true);
+                _specialCountdownBarSprite.enabled = true;
+                _specialCountdownFrameSprite.enabled = true;
             }
 
             StartCoroutine(SpecialCountdown());
@@ -232,12 +248,13 @@ namespace BOYAREngine.Units
             while (_specialDurationCurrent >= 0.001f)
             {
                 _specialDurationCurrent -= Time.deltaTime;
-                _specialCountdownBar.fillAmount = Mathf.InverseLerp(0f, SpecialDuration, _specialDurationCurrent);
-                yield return null;
+                _specialCountdownBarSprite.transform.localScale = new Vector3(Mathf.Clamp(_specialDurationCurrent, 0f, 2.32f) * _specialDurationCurrent / SpecialDuration, 1.52f, 1f);
+                yield return new WaitForEndOfFrame();
             }
 
             IsSpecialActive = false;
-            _specialCountdownGo.SetActive(false);
+            _specialCountdownBarSprite.enabled = false;
+            _specialCountdownFrameSprite.enabled = false;
         }
 
         private IEnumerator RapidFire()
@@ -273,12 +290,12 @@ namespace BOYAREngine.Units
 
         private void UpdateHpUi()
         {
-            _hpBar.fillAmount = Mathf.InverseLerp(0, HealthMax, HealthCurrent);
+            _hpBarSprite.transform.localScale = new Vector3(Mathf.Clamp(HealthCurrent, 0f, 2.32f) * HealthCurrent / HealthMax, 1.52f, 1f);    // 2.32f
         }
 
         public void UpdateSpecialUi()
         {
-            _specialBar.fillAmount = Mathf.InverseLerp(0, _specialMax, SpecialCurrent);
+            _specialBarSprite.transform.localScale = new Vector3(Mathf.Clamp(SpecialCurrent, 0f, 2.32f) * SpecialCurrent / _specialMax, 1.52f, 1f);    // 2.32f
         }
 
         public Vector2 SearchForRandomDestination()
@@ -288,13 +305,16 @@ namespace BOYAREngine.Units
 
         public void SearchForTarget()
         {
-            var result = new List<Collider2D>();
-            var cf = new ContactFilter2D();
-            cf.useTriggers = true;
-            cf.SetLayerMask(TargetMask);
-
-            Physics2D.OverlapCircle(transform.position, SearchTargetRadius, cf, result);
-            ShootTargetTransform = result.Count > 0 ? result[Random.Range(0, result.Count)].transform : null;
+            if (IsAlly)
+            {
+                var enemyShips = GameController.Instance.Setup.EnemyShips;
+                ShootTargetTransform = enemyShips[Random.Range(0, enemyShips.Count)].transform;
+            }
+            else
+            {
+                var allyShips = GameController.Instance.Setup.AllyShips;
+                ShootTargetTransform = allyShips[Random.Range(0, allyShips.Count)].transform;
+            }
         }
 
         private void SetBattleSide()
@@ -319,20 +339,20 @@ namespace BOYAREngine.Units
                 // Hp color
                 if (ColorUtility.TryParseHtmlString("#9AEE49", out color))
                 {
-                    _hpBar.color = color;
-                    _hpFrame.color = color;
+                    _hpBarSprite.color = color;
+                    _hpFrameSprite.color = color;
                 }
                 // "Special" color
                 if (ColorUtility.TryParseHtmlString("#97B27D", out color))
                 {
-                    _specialBar.color = color;
-                    _specialFrame.color = color;
+                    _specialBarSprite.color = color;
+                    _specialFrameSprite.color = color;
                 }
                 // Special countdown color
                 if (ColorUtility.TryParseHtmlString("#A4B297", out color))
                 {
-                    _specialCountdownBar.color = color;
-                    _specialCountdownFrame.color = color;
+                    _specialCountdownBarSprite.color = color;
+                    _specialCountdownFrameSprite.color = color;
                 }
             }
             else
@@ -355,20 +375,20 @@ namespace BOYAREngine.Units
                 // Hp color
                 if (ColorUtility.TryParseHtmlString("#FF0000", out color))
                 {
-                    _hpBar.color = color;
-                    _hpFrame.color = color;
+                    _hpBarSprite.color = color;
+                    _hpFrameSprite.color = color;
                 }
                 // "Special" color
                 if (ColorUtility.TryParseHtmlString("#B17C7C", out color))
                 {
-                    _specialBar.color = color;
-                    _specialFrame.color = color;
+                    _specialBarSprite.color = color;
+                    _specialFrameSprite.color = color;
                 }
                 // Special countdown color
                 if (ColorUtility.TryParseHtmlString("#B19F9F", out color))
                 {
-                    _specialCountdownBar.color = color;
-                    _specialCountdownFrame.color = color;
+                    _specialCountdownBarSprite.color = color;
+                    _specialCountdownFrameSprite.color = color;
                 }
             }
         }
@@ -378,21 +398,24 @@ namespace BOYAREngine.Units
             switch (type)
             {
                 case 0:
-                    _hpGo.SetActive(!_hpGo.activeSelf);
+                    _hpBarSprite.enabled = !_hpBarSprite.enabled;
+                    _hpFrameSprite.enabled = !_hpFrameSprite.enabled;
                     break;
                 case 1:
-                    _specialGo.SetActive(!_specialGo.activeSelf);
+                    _specialBarSprite.enabled = !_specialBarSprite.enabled;
+                    _specialFrameSprite.enabled = !_specialFrameSprite.enabled;
                     break;
                 case 2:
                     _canShowSpecialCountdown = !_canShowSpecialCountdown;
-                    if (_specialCountdownGo.activeSelf)
-                    {
-                        _specialCountdownGo.SetActive(!_specialCountdownGo.activeSelf);
-                    }
+                    _isSpecialCountdownActive = !_isSpecialCountdownActive;
+
+                    _specialCountdownBarSprite.enabled = _isSpecialCountdownActive;
+                    _specialCountdownFrameSprite.enabled = _isSpecialCountdownActive;
 
                     if (_specialDurationCurrent > 0.001f && _canShowSpecialCountdown)
                     {
-                        _specialCountdownGo.SetActive(true);
+                        _specialCountdownBarSprite.enabled = true;
+                        _specialCountdownFrameSprite.enabled = true;
                     }
                     break;
                 case 3:
@@ -409,6 +432,7 @@ namespace BOYAREngine.Units
         protected virtual void OnDisable()
         {
             UiSettings.ToggleShipUi -= ToggleShipUi;
+            StopAllCoroutines();
         }
     }
 }

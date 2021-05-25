@@ -39,12 +39,15 @@ namespace BOYAREngine.MainMenu
                         break;
                     default:
                         _statusText.text = result.ToString();
+                        IsLoggedIn(false);
                         break;
                 }
             });
 
             // TODO Debug purpose (DELETE)
+#if UNITY_EDITOR
             IsLoggedIn(true);
+#endif
         }
 
         public void SignOut()

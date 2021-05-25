@@ -16,6 +16,8 @@ namespace BOYAREngine.Units
         {
             base.Start();
 
+            Damage = IsAlly ? AttackerStats.AllyDamage : AttackerStats.EnemyDamage;
+
             _gc = GameController.Instance;
             _typeName = GetType().Name;
 

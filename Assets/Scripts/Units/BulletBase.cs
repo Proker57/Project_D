@@ -10,7 +10,9 @@ namespace BOYAREngine.Units
         [HideInInspector] public UnitBase Ship;
         [HideInInspector] public bool IsAlly;
         private float _speed;
+        private float _lifeTime;
         private bool _isAlive;
+        private bool _canHit;
 
         private Vector3 _direction;
 
@@ -19,6 +21,7 @@ namespace BOYAREngine.Units
             _speed = Ship.BulletSpeed;
             IsAlly = Ship.IsAlly;
             _isAlive = true;
+            _canHit = true;
 
             SetColors();
         }
@@ -27,12 +30,19 @@ namespace BOYAREngine.Units
         {
             if (_isAlive && (Ship.ShootTargetTransform != null))
             {
-                StopCoroutine(nameof(BackToPool));
+                //StopCoroutine(nameof(BackToPool));
+
                 _direction = Ship.ShootTargetTransform.position - transform.position;
                 _direction.Normalize();
                 //Invoke(nameof(BackToPool), Ship.BulletLifeTime);
-                StartCoroutine(nameof(BackToPool));
+                //StartCoroutine(nameof(BackToPool));
                 _isAlive = false;
+            }
+
+            _lifeTime -= Time.deltaTime;
+            if (_lifeTime <= 0.01f)
+            {
+                Deactivate();
             }
 
             _rigidbody2D.velocity = _direction * _speed;
@@ -42,14 +52,18 @@ namespace BOYAREngine.Units
         {
             if (other.gameObject.GetComponent<UnitBase>() != null)
             {
-                var ship = other.gameObject.GetComponent<UnitBase>();
-            
-                if (ship.IsAlly != IsAlly)
+                if (_canHit)
                 {
-                    ship.ReceiveDamage(Ship.Damage);
-                    Ship.SpecialCurrent++;
-                    Ship.UpdateSpecialUi();
-                    Deactivate();
+                    _canHit = false;
+                    var ship = other.gameObject.GetComponent<UnitBase>();
+
+                    if (ship.IsAlly != IsAlly)
+                    {
+                        ship.ReceiveDamage(Ship.Damage);
+                        Ship.SpecialCurrent++;
+                        Ship.UpdateSpecialUi();
+                        Deactivate();
+                    }
                 }
             }
         }
@@ -71,6 +85,7 @@ namespace BOYAREngine.Units
 
             if (IsAlly)
             {
+                gameObject.layer = LayerMask.NameToLayer("AllyBullet");
                 if (ColorUtility.TryParseHtmlString("#B1FF55", out var color))
                 {
                     _spriteRenderer.color = color;
@@ -80,6 +95,7 @@ namespace BOYAREngine.Units
             {
                 if (ColorUtility.TryParseHtmlString("#FF91E7", out var color))
                 {
+                    gameObject.layer = LayerMask.NameToLayer("EnemyBullet");
                     _spriteRenderer.color = color;
                 }
             }
@@ -87,8 +103,14 @@ namespace BOYAREngine.Units
 
         private void OnEnable()
         {
-            if (Ship != null) _speed = Ship.BulletSpeed;
+            if (Ship != null)
+            {
+                _speed = Ship.BulletSpeed;
+                _lifeTime = Ship.BulletLifeTime;
+            }
+
             _isAlive = true;
+            _canHit = true;
         }
 
         private void OnDisable()

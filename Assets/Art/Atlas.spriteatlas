@@ -1,0 +1,76 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!687078895 &4343727234628468602
+SpriteAtlas:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Atlas
+  m_EditorData:
+    serializedVersion: 2
+    textureSettings:
+      serializedVersion: 2
+      anisoLevel: 1
+      compressionQuality: 50
+      maxTextureSize: 2048
+      textureCompression: 0
+      filterMode: 1
+      generateMipMaps: 0
+      readable: 0
+      crunchedCompression: 0
+      sRGB: 1
+    platformSettings:
+    - serializedVersion: 3
+      m_BuildTarget: DefaultTexturePlatform
+      m_MaxTextureSize: 128
+      m_ResizeAlgorithm: 0
+      m_TextureFormat: -1
+      m_TextureCompression: 1
+      m_CompressionQuality: 50
+      m_CrunchedCompression: 1
+      m_AllowsAlphaSplitting: 0
+      m_Overridden: 0
+      m_AndroidETC2FallbackOverride: 0
+      m_ForceMaximumCompressionQuality_BC6H_BC7: 0
+    packingSettings:
+      serializedVersion: 2
+      padding: 4
+      blockOffset: 1
+      allowAlphaSplitting: 0
+      enableRotation: 0
+      enableTightPacking: 1
+    secondaryTextureSettings: {}
+    variantMultiplier: 1
+    packables:
+    - {fileID: 2800000, guid: 8300b7e79f897f84d9a16b017a9b5d1e, type: 3}
+    - {fileID: 2800000, guid: a1ceebdd50528374697b44fc22f84c54, type: 3}
+    - {fileID: 2800000, guid: 9af48888b0503ba4e9d3396780c354da, type: 3}
+    - {fileID: 2800000, guid: b47fd3f9743b1e54a90bc83bbb27ebfc, type: 3}
+    - {fileID: 2800000, guid: ffaf2035a81b7c340aa956744c2550b7, type: 3}
+    - {fileID: 2800000, guid: ab7e1e6ca15fd5d4e89e46d72fa0a10b, type: 3}
+    - {fileID: 2800000, guid: a47b46c0903d96c4d9eff941bfde8922, type: 3}
+    totalSpriteSurfaceArea: 7504
+    bindAsDefault: 1
+    isAtlasV2: 0
+    cachedData: {fileID: 0}
+  m_MasterAtlas: {fileID: 0}
+  m_PackedSprites:
+  - {fileID: 21300000, guid: a47b46c0903d96c4d9eff941bfde8922, type: 3}
+  - {fileID: 21300000, guid: ffaf2035a81b7c340aa956744c2550b7, type: 3}
+  - {fileID: 21300000, guid: 8300b7e79f897f84d9a16b017a9b5d1e, type: 3}
+  - {fileID: 21300000, guid: 9af48888b0503ba4e9d3396780c354da, type: 3}
+  - {fileID: 21300000, guid: b47fd3f9743b1e54a90bc83bbb27ebfc, type: 3}
+  - {fileID: 21300000, guid: ab7e1e6ca15fd5d4e89e46d72fa0a10b, type: 3}
+  - {fileID: 21300000, guid: a1ceebdd50528374697b44fc22f84c54, type: 3}
+  m_PackedSpriteNamesToIndex:
+  - NameTag
+  - Bar
+  - Bullet
+  - Medic
+  - Tank
+  - Frame
+  - Attacker
+  m_RenderDataMap: {}
+  m_Tag: Atlas
+  m_IsVariant: 0
