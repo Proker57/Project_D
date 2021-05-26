@@ -1,5 +1,6 @@
 using GoogleMobileAds.Api;
 using System;
+using UnityEngine;
 
 namespace BOYAREngine.Ads
 {
@@ -18,7 +19,9 @@ namespace BOYAREngine.Ads
             const string adUnitId = "unexpected_platform";
 #endif
             // Create a 320x50 banner at the top of the screen.
-            BannerView = new BannerView(adUnitId, AdSize.Banner, AdPosition.TopLeft);
+            var xPos = (int) (0 + (320 / 2) + Screen.width * 0.05f);
+            var yPos = (int) (Screen.height - 75 - Screen.height * 0.95f);
+            BannerView = new BannerView(adUnitId, AdSize.Banner, xPos, yPos);
             // Create an empty ad request.
             var request = new AdRequest.Builder().Build();
             // Load the banner with the request.

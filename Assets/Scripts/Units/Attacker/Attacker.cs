@@ -16,7 +16,9 @@ namespace BOYAREngine.Units
         {
             base.Start();
 
+            HealthMax = IsAlly ? AttackerStats.AllyHealthMax : AttackerStats.EnemyHealthMax;
             Damage = IsAlly ? AttackerStats.AllyDamage : AttackerStats.EnemyDamage;
+            ReloadTime = IsAlly ? AttackerStats.AllyReloadTime : AttackerStats.EnemyReloadTime;
 
             _gc = GameController.Instance;
             _typeName = GetType().Name;

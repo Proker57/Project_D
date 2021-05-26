@@ -85,7 +85,7 @@ namespace BOYAREngine.Units
 
             CanMove = true;
             CanShoot = true;
-            _canShowSpecialCountdown = true;
+            _canShowSpecialCountdown = false;
             _canUseSpecialAbility = true;
             _isSpecialCountdownActive = true;
             SpriteRenderer.enabled = true;
@@ -136,6 +136,7 @@ namespace BOYAREngine.Units
                 CanShoot = false;
                 _canUseSpecialAbility = false;
                 _canShowSpecialCountdown = false;
+                Death();
 
                 _hpBarSprite.enabled = false;
                 _hpFrameSprite.enabled = false;
@@ -147,10 +148,15 @@ namespace BOYAREngine.Units
 
                 NameTagGo.SetActive(false);
 
-                Invoke(nameof(Death), 1f);
+                Invoke(nameof(DisableShip), 1f);
             }
 
             UpdateHpUi();
+        }
+
+        protected virtual void Death()
+        {
+
         }
 
         public void ReceiveHeal(int healAmount)
@@ -172,7 +178,7 @@ namespace BOYAREngine.Units
             unitBase.ReceiveDamage(unitBase.HealthCurrent / 2);
         }
 
-        protected virtual void Death()
+        private void DisableShip()
         {
             gameObject.transform.parent.gameObject.SetActive(false);
         }

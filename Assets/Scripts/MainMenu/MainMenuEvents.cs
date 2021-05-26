@@ -4,6 +4,9 @@ namespace BOYAREngine.MainMenu
     {
         public delegate void CloseTabsEvent();
         public static CloseTabsEvent CloseTabs;
+
+        public delegate void CloseTabsUpgradeEvent();
+        public static CloseTabsUpgradeEvent CloseTabsUpgrade;
     }
 }
 

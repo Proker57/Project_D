@@ -100,8 +100,10 @@ namespace BOYAREngine.Controller
         {
             _googleAds.RequestBanner();
 
+#if !UNITY_EDITOR
+            
             Load();
-
+#endif
             Counts = new[]
             {
                 AllyAttackers, EnemyAttackers,

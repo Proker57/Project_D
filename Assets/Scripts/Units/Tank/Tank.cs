@@ -21,6 +21,10 @@ namespace BOYAREngine.Units
 
             Type = _typeName;
 
+            HealthMax = IsAlly ? TankStats.AllyHealthMax : TankStats.EnemyHealthMax;
+            Damage = IsAlly ? TankStats.AllyDamage : TankStats.EnemyDamage;
+            ReloadTime = IsAlly ? TankStats.AllyReloadTime : TankStats.EnemyReloadTime;
+
             if (_typeName.Equals("Tank"))
             {
                 if (IsAlly)
@@ -34,6 +38,11 @@ namespace BOYAREngine.Units
 
                 _gc.UiUpdateShipBoards();
             }
+        }
+
+        protected override void Death()
+        {
+            _forceField.SetActive(false);
         }
 
         public override void OnTriggerEnter2D(Collider2D other)
