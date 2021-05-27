@@ -59,6 +59,7 @@ namespace BOYAREngine.Controller
         }
 
         [Header("Progress")]
+        [SerializeField] private MainMenu.Upgrades _upgrades;
         public int Points;
         public int PointsEarned;
         public int Level;
@@ -104,6 +105,8 @@ namespace BOYAREngine.Controller
             
             Load();
 #endif
+            //Load();
+
             Counts = new[]
             {
                 AllyAttackers, EnemyAttackers,
@@ -285,14 +288,41 @@ namespace BOYAREngine.Controller
             {
                 Points = Points,
                 Level = Level,
-
+                AttackerUpgradeCost = _upgrades.AttackerUpgradeCost,
+                TankUpgradeCost = _upgrades.TankUpgradeCost,
+                MedicUpgradeCost = _upgrades.MedicUpgradeCost,
+                // Ally ships
                 AllyAttackers = AllyAttackers,
                 AllyTanks = AllyTanks,
                 AllyMedics = AllyMedics,
-
+                // Enemy ships
                 EnemyAttackers = EnemyAttackers,
                 EnemyTanks = EnemyTanks,
-                EnemyMedics = EnemyMedics
+                EnemyMedics = EnemyMedics,
+                // Ally stats
+                AttackerHealthMax = UnitStats.AttackerHealthMax,
+                AttackerDamage = UnitStats.AttackerDamage,
+                AttackerReloadTime = UnitStats.AttackerReloadTime,
+
+                TankHealthMax = UnitStats.TankHealthMax,
+                TankDamage = UnitStats.TankDamage,
+                TankReloadTime = UnitStats.TankReloadTime,
+
+                MedicHealthMax = UnitStats.MedicHealthMax,
+                MedicDamage = UnitStats.MedicDamage,
+                MedicReloadTime = UnitStats.MedicReloadTime,
+                // Enemy stats
+                EnemyAttackerHealthMax = UnitStats.EnemyAttackerHealthMax,
+                EnemyAttackerDamage = UnitStats.EnemyAttackerDamage,
+                EnemyAttackerReloadTime = UnitStats.EnemyAttackerReloadTime,
+
+                EnemyTankHealthMax = UnitStats.EnemyTankHealthMax,
+                EnemyTankDamage = UnitStats.EnemyTankDamage,
+                EnemyTankReloadTime = UnitStats.EnemyTankReloadTime,
+
+                EnemyMedicHealthMax = UnitStats.EnemyMedicHealthMax,
+                EnemyMedicDamage = UnitStats.EnemyMedicDamage,
+                EnemyMedicReloadTime = UnitStats.EnemyMedicReloadTime
             };
 
             SaveLoad.Save(data);
@@ -304,14 +334,41 @@ namespace BOYAREngine.Controller
             var data = SaveLoad.Load();
             Points = data.Points;
             Level = data.Level;
-
+            _upgrades.AttackerUpgradeCost = data.AttackerUpgradeCost;
+            _upgrades.TankUpgradeCost = data.TankUpgradeCost;
+            _upgrades.MedicUpgradeCost = data.MedicUpgradeCost;
+            // Ally ships
             AllyAttackers = data.AllyAttackers;
             AllyTanks = data.AllyTanks;
             AllyMedics = data.AllyMedics;
-
+            // Enemy ships
             EnemyAttackers = data.EnemyAttackers;
             EnemyTanks = data.EnemyTanks;
             EnemyMedics = data.EnemyMedics;
+            // Ally stats
+            UnitStats.AttackerHealthMax = data.AttackerHealthMax;
+            UnitStats.AttackerDamage = data.AttackerDamage;
+            UnitStats.AttackerReloadTime = data.AttackerReloadTime;
+
+            UnitStats.TankHealthMax = data.TankHealthMax;
+            UnitStats.TankDamage = data.TankDamage;
+            UnitStats.TankReloadTime = data.TankReloadTime;
+
+            UnitStats.MedicHealthMax = data.MedicHealthMax;
+            UnitStats.MedicDamage = data.MedicDamage;
+            UnitStats.MedicReloadTime = data.MedicReloadTime;
+            // Enemy stats
+            UnitStats.EnemyAttackerHealthMax = data.EnemyAttackerHealthMax;
+            UnitStats.EnemyAttackerDamage = data.EnemyAttackerDamage;
+            UnitStats.EnemyAttackerReloadTime = data.EnemyAttackerReloadTime;
+
+            UnitStats.EnemyTankHealthMax = data.EnemyTankHealthMax;
+            UnitStats.EnemyTankDamage = data.EnemyTankDamage;
+            UnitStats.EnemyTankReloadTime = data.EnemyTankReloadTime;
+
+            UnitStats.EnemyMedicHealthMax = data.EnemyMedicHealthMax;
+            UnitStats.EnemyMedicDamage = data.EnemyMedicDamage;
+            UnitStats.EnemyMedicReloadTime = data.EnemyMedicReloadTime;
         }
     }
 
@@ -320,6 +377,9 @@ namespace BOYAREngine.Controller
     {
         public int Points;
         public int Level;
+        public int AttackerUpgradeCost;
+        public int TankUpgradeCost;
+        public int MedicUpgradeCost;
 
         public int AllyAttackers;
         public int AllyTanks;
@@ -328,5 +388,33 @@ namespace BOYAREngine.Controller
         public int EnemyAttackers;
         public int EnemyTanks;
         public int EnemyMedics;
+
+        // Ally ***********************************************
+        // Attacker
+        public int AttackerHealthMax;
+        public int AttackerDamage;
+        public float AttackerReloadTime;
+        // Tank
+        public int TankHealthMax;
+        public int TankDamage;
+        public float TankReloadTime;
+        // Medic
+        public int MedicHealthMax;
+        public int MedicDamage;
+        public float MedicReloadTime;
+
+        // Enemy *********************************************
+        // Attacker
+        public int EnemyAttackerHealthMax;
+        public int EnemyAttackerDamage;
+        public float EnemyAttackerReloadTime;
+        // Tank
+        public int EnemyTankHealthMax;
+        public int EnemyTankDamage;
+        public float EnemyTankReloadTime;
+        // Medic
+        public int EnemyMedicHealthMax;
+        public int EnemyMedicDamage;
+        public float EnemyMedicReloadTime;
     }
 }

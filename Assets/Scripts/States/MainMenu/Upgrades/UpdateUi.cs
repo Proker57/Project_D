@@ -29,7 +29,7 @@ namespace BOYAREngine.Upgrades
                     _damageCost.text = _upgrades.AttackerUpgradeCost.ToString();
                     _damageCurrent.text = UnitStats.AttackerDamage.ToString();
                     _reloadTimeCost.text = _upgrades.AttackerUpgradeCost.ToString();
-                    _reloadTimeCurrent.text = UnitStats.AttackerReloadTime.ToString("0.00");
+                    _reloadTimeCurrent.text = $"{UnitStats.AttackerReloadTime:0.00}s";
                     break;
                 case "Tank":
                     _maxHealthCost.text = _upgrades.TankUpgradeCost.ToString();
@@ -37,7 +37,7 @@ namespace BOYAREngine.Upgrades
                     _damageCost.text = _upgrades.TankUpgradeCost.ToString();
                     _damageCurrent.text = UnitStats.TankDamage.ToString();
                     _reloadTimeCost.text = _upgrades.TankUpgradeCost.ToString();
-                    _reloadTimeCurrent.text = UnitStats.TankReloadTime.ToString("0.00");
+                    _reloadTimeCurrent.text = $"{UnitStats.TankReloadTime:0.00}s";
                     break;
                 case "Medic":
                     _maxHealthCost.text = _upgrades.MedicUpgradeCost.ToString();
@@ -45,7 +45,7 @@ namespace BOYAREngine.Upgrades
                     _damageCost.text = _upgrades.MedicUpgradeCost.ToString();
                     _damageCurrent.text = UnitStats.MedicDamage.ToString();
                     _reloadTimeCost.text = _upgrades.MedicUpgradeCost.ToString();
-                    _reloadTimeCurrent.text = UnitStats.MedicReloadTime.ToString("0.00");
+                    _reloadTimeCurrent.text = $"{UnitStats.MedicReloadTime:0.00}s";
                     break;
             }
         }

@@ -15519,7 +15519,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d79381c9da64bb41943c706a88b5e3d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Points: 1200
+  _upgrades: {fileID: 81045404}
+  Points: 32000
   PointsEarned: 0
   Level: 1
   AllyAttackers: 20
