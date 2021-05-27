@@ -40,5 +40,13 @@ MonoBehaviour:
       to upgrade'
     m_Metadata:
       m_Items: []
+  - m_Id: 61415468101632
+    m_Localized: Cost
+    m_Metadata:
+      m_Items: []
+  - m_Id: 61454642900992
+    m_Localized: Current
+    m_Metadata:
+      m_Items: []
   references:
     version: 1

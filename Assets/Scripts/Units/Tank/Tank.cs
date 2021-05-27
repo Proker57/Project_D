@@ -21,9 +21,9 @@ namespace BOYAREngine.Units
 
             Type = _typeName;
 
-            HealthMax = IsAlly ? TankStats.AllyHealthMax : TankStats.EnemyHealthMax;
-            Damage = IsAlly ? TankStats.AllyDamage : TankStats.EnemyDamage;
-            ReloadTime = IsAlly ? TankStats.AllyReloadTime : TankStats.EnemyReloadTime;
+            HealthMax = IsAlly ? UnitStats.TankHealthMax : UnitStats.EnemyTankHealthMax;
+            Damage = IsAlly ? UnitStats.TankDamage : UnitStats.EnemyTankDamage;
+            ReloadTime = IsAlly ? UnitStats.TankReloadTime : UnitStats.EnemyTankReloadTime;
 
             if (_typeName.Equals("Tank"))
             {

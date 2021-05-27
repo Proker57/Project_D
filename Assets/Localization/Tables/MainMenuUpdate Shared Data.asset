@@ -31,6 +31,14 @@ MonoBehaviour:
     m_Key: HelpText
     m_Metadata:
       m_Items: []
+  - m_Id: 61415468101632
+    m_Key: Cost
+    m_Metadata:
+      m_Items: []
+  - m_Id: 61454642900992
+    m_Key: Current
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

@@ -7,6 +7,9 @@ namespace BOYAREngine.MainMenu
 
         public delegate void CloseTabsUpgradeEvent();
         public static CloseTabsUpgradeEvent CloseTabsUpgrade;
+
+        public delegate void UpgradeUpdateUiEvent();
+        public static UpgradeUpdateUiEvent UpgradeUpdateUi;
     }
 }
 
