@@ -48,5 +48,17 @@ MonoBehaviour:
     m_Localized: Current
     m_Metadata:
       m_Items: []
+  - m_Id: 1087458882678784
+    m_Localized: 'Shield
+
+      Capacity'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1090552798441472
+    m_Localized: 'Heal
+
+      Power'
+    m_Metadata:
+      m_Items: []
   references:
     version: 1

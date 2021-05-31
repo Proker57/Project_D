@@ -39,6 +39,14 @@ MonoBehaviour:
     m_Key: Current
     m_Metadata:
       m_Items: []
+  - m_Id: 1087458882678784
+    m_Key: ShieldCapacity
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1090552798441472
+    m_Key: HealPower
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

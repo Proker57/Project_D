@@ -7,10 +7,13 @@ namespace BOYAREngine.Units
         [SerializeField] private UnitBase _unitBase;
         [SerializeField] private SpriteRenderer _spriteRenderer;
         [SerializeField] private float _alpha;
+        private int _capacity;
 
         private void Start()
         {
             _spriteRenderer.color = new Color(_unitBase.SpriteRenderer.color.r, _unitBase.SpriteRenderer.color.g, _unitBase.SpriteRenderer.color.b, _alpha);
+
+            _capacity = _unitBase.IsAlly ? UnitStats.TankShieldCapacity : UnitStats.EnemyTankShieldCapacity;
         }
 
         private void OnTriggerEnter2D(Collider2D other)
@@ -21,9 +24,20 @@ namespace BOYAREngine.Units
 
                 if (bullet.IsAlly != _unitBase.IsAlly)
                 {
+                    _capacity -= bullet.Ship.Damage;
                     bullet.gameObject.SetActive(false);
+
+                    if (_capacity <= 0)
+                    {
+                        Deactivate(bullet);
+                    }
                 }
             }
+        }
+
+        private void Deactivate(BulletBase bullet)
+        {
+            gameObject.SetActive(false);
         }
     }
 }

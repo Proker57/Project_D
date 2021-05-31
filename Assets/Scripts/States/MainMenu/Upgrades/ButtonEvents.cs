@@ -12,6 +12,10 @@ namespace BOYAREngine.Upgrades
         public int AddMaxHealthValue = 5;
         public int AddDamage = 3;
         public float AddReloadTime = -0.05f;
+        // Tank
+        public int AddShieldCapacity = 5;
+        // Medic
+        public int AddHealPower = 5;
 
         private GameController _gc;
 
@@ -100,6 +104,19 @@ namespace BOYAREngine.Upgrades
             }
         }
 
+        public void TankAddShieldCapacity()
+        {
+            if (_gc.Points >= _upgrades.TankUpgradeCost)
+            {
+                UnitStats.TankShieldCapacity += AddShieldCapacity;
+                _gc.Points -= _upgrades.TankUpgradeCost;
+                _upgrades.TankUpgradeCost += 100;
+
+                _gc.UiUpdatePoints();
+                MainMenuEvents.UpgradeUpdateUi?.Invoke();
+            }
+        }
+
         // Medic
         public void MedicAddMaxHealth()
         {
@@ -132,6 +149,19 @@ namespace BOYAREngine.Upgrades
             if (_gc.Points >= _upgrades.MedicUpgradeCost)
             {
                 UnitStats.MedicReloadTime += AddReloadTime;
+                _gc.Points -= _upgrades.MedicUpgradeCost;
+                _upgrades.MedicUpgradeCost += 100;
+
+                _gc.UiUpdatePoints();
+                MainMenuEvents.UpgradeUpdateUi?.Invoke();
+            }
+        }
+
+        public void MedicAddHealPower()
+        {
+            if (_gc.Points >= _upgrades.MedicUpgradeCost)
+            {
+                UnitStats.MedicHealPower += AddHealPower;
                 _gc.Points -= _upgrades.MedicUpgradeCost;
                 _upgrades.MedicUpgradeCost += 100;
 

@@ -10,15 +10,15 @@ namespace BOYAREngine.MainMenu
 
         [Header("Attacker")]
         [SerializeField] private Text _attackerCountText;
-        private int _attackerCost = 100;
+        private int _attackerCost = 1000;
         [SerializeField] private Text _attackerCostText;
         [Header("Tank")]
         [SerializeField] private Text _tankCountText;
-        private int _tankCost = 100;
+        private int _tankCost = 1000;
         [SerializeField] private Text _tankCostText;
         [Header("Medic")]
         [SerializeField] private Text _medicCountText;
-        private int _medicCost = 100;
+        private int _medicCost = 1000;
         [SerializeField] private Text _medicCostText;
 
         private GameController _gc;
@@ -85,15 +85,15 @@ namespace BOYAREngine.MainMenu
 
         private void UiHangarUpdate()
         {
-            _attackerCost = _gc.AllyAttackers * 10;
+            _attackerCost = _gc.AllyAttackers / 2 * 1000;
             _attackerCountText.text = _gc.AllyAttackers.ToString();
             _attackerCostText.text = _attackerCost.ToString();
 
-            _tankCost = (int) (_gc.AllyTanks * 10 * 2f);
+            _tankCost = _gc.AllyTanks / 2 * 2000;
             _tankCountText.text = _gc.AllyTanks.ToString();
             _tankCostText.text = _tankCost.ToString();
 
-            _medicCost = (int)(_gc.AllyMedics * 10 * 2.5f);
+            _medicCost = _gc.AllyMedics / 2 * 3000;
             _medicCountText.text = _gc.AllyMedics.ToString();
             _medicCostText.text = _medicCost.ToString();
         }

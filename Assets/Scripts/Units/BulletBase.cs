@@ -93,7 +93,7 @@ namespace BOYAREngine.Units
             }
             else
             {
-                if (ColorUtility.TryParseHtmlString("#FF91E7", out var color))
+                if (ColorUtility.TryParseHtmlString("#FF0000", out var color))
                 {
                     gameObject.layer = LayerMask.NameToLayer("EnemyBullet");
                     _spriteRenderer.color = color;

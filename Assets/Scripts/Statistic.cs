@@ -16,12 +16,22 @@ namespace BOYAREngine
         private void OnEnemyDestroyed()
         {
             EnemiesDestroyed++;
-
-            PlayGamesPlatform.Instance.IncrementAchievement(_achievements.Destroyer10, 1, (bool success) => { });
-
-            if (EnemiesDestroyed >= 20)
+            // 20
+            if (EnemiesDestroyed <= 20)
             {
-                Social.ReportProgress(_achievements.Destroyer9, 0.0f, (bool success) => { });
+                PlayGamesPlatform.Instance.IncrementAchievement(_achievements.Destroyer10, 1, (bool success) => { });
+            }
+            // 100
+            if (EnemiesDestroyed == 20) PlayGamesPlatform.Instance.RevealAchievement(_achievements.Destroyer9, (bool success) => { });
+            if (EnemiesDestroyed > 20 && EnemiesDestroyed <= 120)
+            {
+                PlayGamesPlatform.Instance.IncrementAchievement(_achievements.Destroyer9, 1, (bool success) => { });
+            }
+            // 500
+            if (EnemiesDestroyed == 120) PlayGamesPlatform.Instance.RevealAchievement(_achievements.Destroyer8, (bool success) => { });
+            if (EnemiesDestroyed > 120 && EnemiesDestroyed <= 620)
+            {
+                PlayGamesPlatform.Instance.IncrementAchievement(_achievements.Destroyer8, 1, (bool success) => { });
             }
         }
 

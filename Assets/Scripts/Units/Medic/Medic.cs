@@ -27,6 +27,7 @@ namespace BOYAREngine.Units
             HealthMax = IsAlly ? UnitStats.MedicHealthMax : UnitStats.EnemyMedicHealthMax;
             Damage = IsAlly ? UnitStats.MedicDamage : UnitStats.EnemyMedicDamage;
             ReloadTime = IsAlly ? UnitStats.MedicReloadTime : UnitStats.EnemyMedicReloadTime;
+            _healPower = IsAlly ? UnitStats.MedicHealPower : UnitStats.EnemyMedicHealPower;
 
             _line.startColor = SpriteRenderer.color;
             _line.endColor = SpriteRenderer.color;

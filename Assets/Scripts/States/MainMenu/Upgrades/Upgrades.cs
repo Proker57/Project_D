@@ -7,9 +7,9 @@ namespace BOYAREngine.MainMenu
     {
         [SerializeField] private GameObject _upgradesGo;
 
-        public int AttackerUpgradeCost = 100;
-        public int TankUpgradeCost = 100;
-        public int MedicUpgradeCost = 100;
+        public int AttackerUpgradeCost = 200;
+        public int TankUpgradeCost = 200;
+        public int MedicUpgradeCost = 200;
 
         private GameController _gc;
 
